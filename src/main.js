@@ -1,7 +1,7 @@
 // DropIt — Main Application Logic (Supabase version)
 import { createClient } from '@supabase/supabase-js';
 import QRCode from 'qrcode';
-import { Html5Qrcode } from 'html5-qrcode';
+import jsQR from 'jsqr';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase-config.js';
 
 // ──────────────────────────────────────────────
@@ -443,73 +443,86 @@ function showSendDone() {
 }
 
 // ──────────────────────────────────────────────
-// QR Scanner
+// QR Scanner (Manual with jsQR)
 // ──────────────────────────────────────────────
-
-// Camera only works on HTTPS or localhost
-const isCameraSupported = () =>
-  window.isSecureContext &&
-  !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+let videoStream = null;
+let scanningActive = false;
 
 async function startScanner() {
-  // If not HTTPS, skip camera entirely
-  if (!isCameraSupported()) {
-    activateCodeTab();
-    return;
-  }
+  const video = $('qr-video');
+  if (!video) return;
 
   try {
-    // Ensure the element has real dimensions before starting
-    const readerEl = $('qr-reader');
-    if (!readerEl || readerEl.offsetWidth === 0) {
-      await new Promise(r => setTimeout(r, 400));
-    }
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment' }
+    });
 
-    const containerW = readerEl.offsetWidth || 260;
-    const boxSize = Math.min(Math.round(containerW * 0.7), 220);
-
-    qrScanner = new Html5Qrcode('qr-reader', { verbose: false });
-    await qrScanner.start(
-      { facingMode: 'environment' },
-      { fps: 10, qrbox: { width: boxSize, height: boxSize } },
-      async (decodedText) => {
-        await qrScanner.stop().catch(() => { });
-        qrScanner = null;
-
-        let code = decodedText;
-        try {
-          const url = new URL(decodedText);
-          const param = url.searchParams.get('code');
-          if (param) code = param;
-        } catch (_) { }
-
-        const ok = await connectToSession(code);
-        if (ok) {
-          $('send-connect').classList.add('hidden');
-          $('send-content').classList.remove('hidden');
-        } else {
-          showToast('رمز غير صالح، حاول مرة أخرى');
-          setTimeout(startScanner, 500);
-        }
-      },
-      () => { } // ignore per-frame errors
-    );
+    videoStream = stream;
+    video.srcObject = stream;
+    scanningActive = true;
+    requestAnimationFrame(scanFrame);
   } catch (err) {
-    console.error('Camera error:', err);
-    // Auto-fallback to code input on any camera error
+    console.error('Camera access denied:', err);
+    showToast('تعذر الوصول للكاميرا، يرجى إعطاء الإذن');
     activateCodeTab();
-    if (err && err.name !== 'NotAllowedError') {
-      // Only show toast if it's not a permission denial (user already knows)
-      showToast('تعذر فتح الكاميرا، أدخل الرمز يدوياً');
-    }
   }
 }
 
-async function stopScanner() {
-  if (qrScanner) {
-    try { await qrScanner.stop(); } catch (_) { }
-    qrScanner = null;
+function scanFrame() {
+  if (!scanningActive) return;
+
+  const video = $('qr-video');
+  if (video.readyState === video.HAVE_ENOUGH_DATA) {
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+      inversionAttempts: "dontInvert",
+    });
+
+    if (code) {
+      handleScannedResult(code.data);
+      return; // Stop scanning after success
+    }
   }
+
+  if (scanningActive) {
+    requestAnimationFrame(scanFrame);
+  }
+}
+
+async function handleScannedResult(decodedText) {
+  stopScanner();
+
+  let code = decodedText;
+  try {
+    const url = new URL(decodedText);
+    const param = url.searchParams.get('code');
+    if (param) code = param;
+  } catch (_) { }
+
+  const ok = await connectToSession(code);
+  if (ok) {
+    $('send-connect').classList.add('hidden');
+    $('send-content').classList.remove('hidden');
+  } else {
+    showToast('رمز غير صالح، حاول مرة أخرى');
+    setTimeout(startScanner, 1000);
+  }
+}
+
+function stopScanner() {
+  scanningActive = false;
+  if (videoStream) {
+    videoStream.getTracks().forEach(track => track.stop());
+    videoStream = null;
+  }
+  const video = $('qr-video');
+  if (video) video.srcObject = null;
 }
 
 // ──────────────────────────────────────────────
@@ -566,7 +579,8 @@ function activateCodeTab() {
 
 // Default: use code tab on mobile/non-HTTPS, scan tab on desktop HTTPS
 function activateDefaultTab() {
-  if (isCameraSupported()) {
+  const supportsCamera = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  if (supportsCamera && window.isSecureContext) {
     activateScanTab();
   } else {
     activateCodeTab();
