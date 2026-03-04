@@ -356,41 +356,38 @@ async function uploadFile(file) {
   $('upload-progress').classList.remove('hidden');
   $('send-now-btn').disabled = true;
 
+  // Animate progress bar while uploading
+  let fakeProgress = 0;
+  const fakeTimer = setInterval(() => {
+    // Slowly fill to 90% while waiting for real upload
+    if (fakeProgress < 90) {
+      fakeProgress += Math.random() * 8;
+      if (fakeProgress > 90) fakeProgress = 90;
+      $('progress-bar').style.width = `${fakeProgress.toFixed(0)}%`;
+      $('progress-text').textContent = `${fakeProgress.toFixed(0)}%`;
+    }
+  }, 300);
+
   try {
     const safeFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
     const filePath = `${connectedCode}/${Date.now()}_${safeFileName}`;
-    const uploadUrl = `${SUPABASE_URL}/storage/v1/object/transfers/${filePath}`;
-    const contentType = file.type || 'application/octet-stream';
 
-    // XHR for real upload progress
-    await new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-
-      xhr.upload.addEventListener('progress', (e) => {
-        if (e.lengthComputable) {
-          const pct = Math.round((e.loaded / e.total) * 100);
-          $('progress-bar').style.width = `${pct}%`;
-          $('progress-text').textContent = `${pct}%`;
-        }
+    // Upload via Supabase SDK (handles new key format correctly)
+    const { error: uploadError } = await supabase.storage
+      .from('transfers')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: true,
+        contentType: file.type || 'application/octet-stream',
       });
 
-      xhr.addEventListener('load', () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          resolve();
-        } else {
-          console.error('Upload response:', xhr.status, xhr.responseText);
-          reject(new Error(`فشل الرفع: ${xhr.status} — ${xhr.responseText}`));
-        }
-      });
+    clearInterval(fakeTimer);
 
-      xhr.addEventListener('error', () => reject(new Error('خطأ في الشبكة')));
+    if (uploadError) throw uploadError;
 
-      xhr.open('POST', uploadUrl);
-      xhr.setRequestHeader('Authorization', `Bearer ${SUPABASE_ANON_KEY}`);
-      xhr.setRequestHeader('Content-Type', contentType);
-      xhr.setRequestHeader('x-upsert', 'true');
-      xhr.send(file); // send raw file — NOT FormData
-    });
+    // Complete progress bar
+    $('progress-bar').style.width = '100%';
+    $('progress-text').textContent = '100%';
 
     // Get permanent public URL
     const { data: urlData } = supabase.storage
@@ -400,7 +397,7 @@ async function uploadFile(file) {
     const downloadUrl = urlData.publicUrl;
 
     // Update session → triggers receiver Realtime
-    const { error } = await supabase.from('sessions').update({
+    const { error: updateError } = await supabase.from('sessions').update({
       status: 'transferred',
       type: 'file',
       file_name: file.name,
@@ -408,13 +405,16 @@ async function uploadFile(file) {
       download_url: downloadUrl,
     }).eq('code', connectedCode);
 
-    if (error) throw error;
-    showSendDone();
+    if (updateError) throw updateError;
+
+    setTimeout(showSendDone, 400);
 
   } catch (err) {
+    clearInterval(fakeTimer);
     console.error('Upload error:', err);
     showToast(`خطأ في الرفع: ${err.message}`);
     $('upload-progress').classList.add('hidden');
+    $('progress-bar').style.width = '0%';
     $('send-now-btn').disabled = false;
   }
 }
