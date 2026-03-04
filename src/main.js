@@ -183,7 +183,7 @@ async function startReceiveSession() {
       startReceiveSession();
     });
 
-    // Listen for transfer via Realtime
+    // Listen for session changes via Realtime
     realtimeChannel = supabase
       .channel(`session-${code}`)
       .on('postgres_changes', {
@@ -193,6 +193,20 @@ async function startReceiveSession() {
         filter: `code=eq.${code}`,
       }, (payload) => {
         const data = payload.new;
+
+        // ── Sender connected ──
+        if (data.status === 'connected') {
+          const statusText = $('receive-status-text');
+          if (statusText) {
+            statusText.textContent = '✅ تم الاتصال! في انتظار الملف أو الرابط…';
+            statusText.style.color = 'var(--c-green)';
+          }
+          const dot = document.querySelector('.pulse-dot');
+          if (dot) dot.classList.add('green');
+          showToast('✅ اتصل بك المُرسِل!');
+        }
+
+        // ── File/Link transferred ──
         if (data.status === 'transferred') {
           stopTimer();
           supabase.removeChannel(realtimeChannel);
@@ -282,6 +296,9 @@ async function connectToSession(code) {
       return false;
     }
 
+    // Mark session as connected so receiver knows
+    await supabase.from('sessions').update({ status: 'connected' }).eq('code', code);
+
     connectedCode = code;
     resetConnectBtn();
     return true;
@@ -340,46 +357,49 @@ async function uploadFile(file) {
   $('send-now-btn').disabled = true;
 
   try {
-    const filePath = `${connectedCode}/${Date.now()}_${file.name}`;
-
-    // Upload with progress tracking
-    const xhr = new XMLHttpRequest();
-    const formData = new FormData();
-    formData.append('file', file);
-
-    // Manual XHR upload for progress tracking with Supabase Storage
+    const safeFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const filePath = `${connectedCode}/${Date.now()}_${safeFileName}`;
     const uploadUrl = `${SUPABASE_URL}/storage/v1/object/transfers/${filePath}`;
+    const contentType = file.type || 'application/octet-stream';
 
+    // XHR for real upload progress
     await new Promise((resolve, reject) => {
-      xhr.upload.onprogress = (e) => {
+      const xhr = new XMLHttpRequest();
+
+      xhr.upload.addEventListener('progress', (e) => {
         if (e.lengthComputable) {
           const pct = Math.round((e.loaded / e.total) * 100);
           $('progress-bar').style.width = `${pct}%`;
           $('progress-text').textContent = `${pct}%`;
         }
-      };
+      });
 
-      xhr.onload = () => {
-        if (xhr.status >= 200 && xhr.status < 300) resolve();
-        else reject(new Error(`Upload failed: ${xhr.status}`));
-      };
+      xhr.addEventListener('load', () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve();
+        } else {
+          console.error('Upload response:', xhr.status, xhr.responseText);
+          reject(new Error(`فشل الرفع: ${xhr.status} — ${xhr.responseText}`));
+        }
+      });
 
-      xhr.onerror = () => reject(new Error('Upload network error'));
+      xhr.addEventListener('error', () => reject(new Error('خطأ في الشبكة')));
 
       xhr.open('POST', uploadUrl);
       xhr.setRequestHeader('Authorization', `Bearer ${SUPABASE_ANON_KEY}`);
+      xhr.setRequestHeader('Content-Type', contentType);
       xhr.setRequestHeader('x-upsert', 'true');
-      xhr.send(file);
+      xhr.send(file); // send raw file — NOT FormData
     });
 
-    // Get public URL
+    // Get permanent public URL
     const { data: urlData } = supabase.storage
       .from('transfers')
       .getPublicUrl(filePath);
 
     const downloadUrl = urlData.publicUrl;
 
-    // Update session
+    // Update session → triggers receiver Realtime
     const { error } = await supabase.from('sessions').update({
       status: 'transferred',
       type: 'file',
@@ -393,7 +413,7 @@ async function uploadFile(file) {
 
   } catch (err) {
     console.error('Upload error:', err);
-    showToast('حدث خطأ أثناء رفع الملف');
+    showToast(`خطأ في الرفع: ${err.message}`);
     $('upload-progress').classList.add('hidden');
     $('send-now-btn').disabled = false;
   }
@@ -442,13 +462,16 @@ async function startScanner() {
     // Ensure the element has real dimensions before starting
     const readerEl = $('qr-reader');
     if (!readerEl || readerEl.offsetWidth === 0) {
-      await new Promise(r => setTimeout(r, 300));
+      await new Promise(r => setTimeout(r, 400));
     }
+
+    const containerW = readerEl.offsetWidth || 260;
+    const boxSize = Math.min(Math.round(containerW * 0.7), 220);
 
     qrScanner = new Html5Qrcode('qr-reader', { verbose: false });
     await qrScanner.start(
       { facingMode: 'environment' },
-      { fps: 10, qrbox: { width: 180, height: 180 }, aspectRatio: 1 },
+      { fps: 10, qrbox: { width: boxSize, height: boxSize } },
       async (decodedText) => {
         await qrScanner.stop().catch(() => { });
         qrScanner = null;
