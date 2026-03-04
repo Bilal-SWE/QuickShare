@@ -425,14 +425,32 @@ function showSendDone() {
 // ──────────────────────────────────────────────
 // QR Scanner
 // ──────────────────────────────────────────────
+
+// Camera only works on HTTPS or localhost
+const isCameraSupported = () =>
+  window.isSecureContext &&
+  !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+
 async function startScanner() {
+  // If not HTTPS, skip camera entirely
+  if (!isCameraSupported()) {
+    activateCodeTab();
+    return;
+  }
+
   try {
-    qrScanner = new Html5Qrcode('qr-reader');
+    // Ensure the element has real dimensions before starting
+    const readerEl = $('qr-reader');
+    if (!readerEl || readerEl.offsetWidth === 0) {
+      await new Promise(r => setTimeout(r, 300));
+    }
+
+    qrScanner = new Html5Qrcode('qr-reader', { verbose: false });
     await qrScanner.start(
       { facingMode: 'environment' },
-      { fps: 10, qrbox: { width: 200, height: 200 } },
+      { fps: 10, qrbox: { width: 180, height: 180 }, aspectRatio: 1 },
       async (decodedText) => {
-        await qrScanner.stop();
+        await qrScanner.stop().catch(() => { });
         qrScanner = null;
 
         let code = decodedText;
@@ -448,15 +466,19 @@ async function startScanner() {
           $('send-content').classList.remove('hidden');
         } else {
           showToast('رمز غير صالح، حاول مرة أخرى');
-          startScanner();
+          setTimeout(startScanner, 500);
         }
       },
-      () => { }
+      () => { } // ignore per-frame errors
     );
   } catch (err) {
     console.error('Camera error:', err);
+    // Auto-fallback to code input on any camera error
     activateCodeTab();
-    showToast('تعذر الوصول إلى الكاميرا، استخدم إدخال الرمز');
+    if (err && err.name !== 'NotAllowedError') {
+      // Only show toast if it's not a permission denial (user already knows)
+      showToast('تعذر فتح الكاميرا، أدخل الرمز يدوياً');
+    }
   }
 }
 
@@ -506,7 +528,8 @@ function activateScanTab() {
   $('tab-code').classList.remove('active');
   $('scan-panel').classList.add('active');
   $('code-panel').classList.remove('active');
-  startScanner();
+  // Wait for screen animation + panel transition before starting camera
+  setTimeout(startScanner, 500);
 }
 
 function activateCodeTab() {
@@ -516,6 +539,15 @@ function activateCodeTab() {
   $('scan-panel').classList.remove('active');
   stopScanner();
   setTimeout(() => $('ci0').focus(), 100);
+}
+
+// Default: use code tab on mobile/non-HTTPS, scan tab on desktop HTTPS
+function activateDefaultTab() {
+  if (isCameraSupported()) {
+    activateScanTab();
+  } else {
+    activateCodeTab();
+  }
 }
 
 // ──────────────────────────────────────────────
@@ -528,7 +560,7 @@ $('btn-receive').addEventListener('click', () => {
 
 $('btn-send').addEventListener('click', () => {
   navigateTo('send');
-  setTimeout(activateScanTab, 300);
+  setTimeout(activateDefaultTab, 300);
 });
 
 $('back-from-receive').addEventListener('click', async () => {
@@ -558,7 +590,7 @@ $('copy-code-btn').addEventListener('click', () => {
 $('receive-again-btn').addEventListener('click', () => startReceiveSession());
 $('send-again-btn').addEventListener('click', () => {
   resetSendScreen();
-  setTimeout(activateScanTab, 100);
+  setTimeout(activateDefaultTab, 100);
 });
 
 $('tab-scan').addEventListener('click', () => {
