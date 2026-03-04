@@ -215,13 +215,17 @@ async function startReceiveSession() {
 
           const content = $('received-content');
           if (data.type === 'link') {
+            const isUrl = data.url.startsWith('http://') || data.url.startsWith('https://');
+            const displayContent = isUrl
+              ? `<a href="${data.url}" target="_blank" rel="noopener" style="word-break: break-all;">${data.url}</a>`
+              : `<div style="white-space: pre-wrap; word-break: break-word; text-align: right; width: 100%;">${data.url}</div>`;
+
             content.innerHTML = `
-              <div class="received-link-wrap">
-                <svg style="flex-shrink:0;width:20px;height:20px;color:var(--c-teal)" viewBox="0 0 24 24" fill="none">
-                  <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <div class="received-link-wrap" style="align-items: flex-start;">
+                <svg style="flex-shrink:0;width:20px;height:20px;color:var(--c-teal);margin-top:2px;" viewBox="0 0 24 24" fill="none">
+                  <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                <a href="${data.url}" target="_blank" rel="noopener">${data.url}</a>
+                ${displayContent}
               </div>`;
           } else if (data.type === 'file') {
             content.innerHTML = `
@@ -337,13 +341,19 @@ async function sendContent() {
     if (!selectedFile) { showToast('يرجى اختيار ملف'); return; }
     await uploadFile(selectedFile);
   } else {
-    const url = $('link-input').value.trim();
-    if (!url) { showToast('يرجى إدخال رابط'); return; }
-    if (!url.startsWith('http://') && !url.startsWith('https://')) {
-      showToast('يرجى إدخال رابط صحيح يبدأ بـ https://');
-      return;
-    }
-    await sendLink(url);
+    const rawUrl = $('link-input').value.trim();
+    if (!rawUrl) { showToast('يرجى إدخال نص أو رابط'); return; }
+
+    // Sanitize input to prevent basic HTML/Script injection which could be 
+    // interpreted as SQL injection vectors in some contexts, and protects receiver
+    const sanitizedUrl = rawUrl
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+
+    await sendLink(sanitizedUrl);
   }
 }
 

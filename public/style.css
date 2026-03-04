@@ -900,9 +900,11 @@ body {
   border-radius: 14px;
   color: var(--c-text);
   font-size: 0.95rem;
-  font-family: monospace;
+  font-family: inherit;
   transition: all var(--transition);
   outline: none;
+  resize: vertical;
+  min-height: 50px;
 }
 
 .link-input:focus {

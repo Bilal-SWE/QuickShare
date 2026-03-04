@@ -222,14 +222,12 @@
               </svg>
               ملف
             </button>
-            <button class="ctab-btn" id="ctab-link" aria-label="إرسال رابط">
+            <button class="ctab-btn" id="ctab-link" aria-label="إرسال رابط أو نص">
               <svg viewBox="0 0 24 24" fill="none">
-                <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" stroke="currentColor"
-                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" stroke="currentColor"
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" stroke="currentColor"
                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
-              رابط
+              نص / رابط
             </button>
           </div>
 
@@ -274,8 +272,8 @@
 
           <div id="link-panel" class="ctab-panel">
             <div class="link-input-wrap">
-              <input type="url" id="link-input" class="link-input" placeholder="https://example.com" dir="ltr"
-                aria-label="الرابط" />
+              <textarea id="link-input" class="link-input text-area-input" placeholder="اكتب نصاً أو الصق رابطاً هنا..."
+                aria-label="نص أو رابط" rows="3"></textarea>
             </div>
           </div>
 
