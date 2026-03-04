@@ -1,7 +1,5 @@
-// DropIt — Main Application Logic (Supabase version)
 import { createClient } from '@supabase/supabase-js';
 import QRCode from 'qrcode';
-import jsQR from 'jsqr';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabase-config.js';
 
 // ──────────────────────────────────────────────
@@ -443,89 +441,6 @@ function showSendDone() {
 }
 
 // ──────────────────────────────────────────────
-// QR Scanner (Manual with jsQR)
-// ──────────────────────────────────────────────
-let videoStream = null;
-let scanningActive = false;
-
-async function startScanner() {
-  const video = $('qr-video');
-  if (!video) return;
-
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment' }
-    });
-
-    videoStream = stream;
-    video.srcObject = stream;
-    scanningActive = true;
-    requestAnimationFrame(scanFrame);
-  } catch (err) {
-    console.error('Camera access denied:', err);
-    showToast('تعذر الوصول للكاميرا، يرجى إعطاء الإذن');
-    activateCodeTab();
-  }
-}
-
-function scanFrame() {
-  if (!scanningActive) return;
-
-  const video = $('qr-video');
-  if (video.readyState === video.HAVE_ENOUGH_DATA) {
-    const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const code = jsQR(imageData.data, imageData.width, imageData.height, {
-      inversionAttempts: "dontInvert",
-    });
-
-    if (code) {
-      handleScannedResult(code.data);
-      return; // Stop scanning after success
-    }
-  }
-
-  if (scanningActive) {
-    requestAnimationFrame(scanFrame);
-  }
-}
-
-async function handleScannedResult(decodedText) {
-  stopScanner();
-
-  let code = decodedText;
-  try {
-    const url = new URL(decodedText);
-    const param = url.searchParams.get('code');
-    if (param) code = param;
-  } catch (_) { }
-
-  const ok = await connectToSession(code);
-  if (ok) {
-    $('send-connect').classList.add('hidden');
-    $('send-content').classList.remove('hidden');
-  } else {
-    showToast('رمز غير صالح، حاول مرة أخرى');
-    setTimeout(startScanner, 1000);
-  }
-}
-
-function stopScanner() {
-  scanningActive = false;
-  if (videoStream) {
-    videoStream.getTracks().forEach(track => track.stop());
-    videoStream = null;
-  }
-  const video = $('qr-video');
-  if (video) video.srcObject = null;
-}
-
-// ──────────────────────────────────────────────
 // Code Inputs
 // ──────────────────────────────────────────────
 function getEnteredCode() {
@@ -559,34 +474,6 @@ function resetSendScreen() {
   $('link-panel').classList.remove('active');
 }
 
-function activateScanTab() {
-  $('tab-scan').classList.add('active');
-  $('tab-code').classList.remove('active');
-  $('scan-panel').classList.add('active');
-  $('code-panel').classList.remove('active');
-  // Wait for screen animation + panel transition before starting camera
-  setTimeout(startScanner, 500);
-}
-
-function activateCodeTab() {
-  $('tab-code').classList.add('active');
-  $('tab-scan').classList.remove('active');
-  $('code-panel').classList.add('active');
-  $('scan-panel').classList.remove('active');
-  stopScanner();
-  setTimeout(() => $('ci0').focus(), 100);
-}
-
-// Default: use code tab on mobile/non-HTTPS, scan tab on desktop HTTPS
-function activateDefaultTab() {
-  const supportsCamera = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-  if (supportsCamera && window.isSecureContext) {
-    activateScanTab();
-  } else {
-    activateCodeTab();
-  }
-}
-
 // ──────────────────────────────────────────────
 // Event Listeners
 // ──────────────────────────────────────────────
@@ -597,7 +484,7 @@ $('btn-receive').addEventListener('click', () => {
 
 $('btn-send').addEventListener('click', () => {
   navigateTo('send');
-  setTimeout(activateDefaultTab, 300);
+  setTimeout(() => $('ci0').focus(), 400);
 });
 
 $('back-from-receive').addEventListener('click', async () => {
@@ -610,8 +497,7 @@ $('back-from-receive').addEventListener('click', async () => {
   navigateTo('home');
 });
 
-$('back-from-send').addEventListener('click', async () => {
-  await stopScanner();
+$('back-from-send').addEventListener('click', () => {
   resetSendScreen();
   navigateTo('home');
 });
@@ -627,14 +513,7 @@ $('copy-code-btn').addEventListener('click', () => {
 $('receive-again-btn').addEventListener('click', () => startReceiveSession());
 $('send-again-btn').addEventListener('click', () => {
   resetSendScreen();
-  setTimeout(activateDefaultTab, 100);
-});
-
-$('tab-scan').addEventListener('click', () => {
-  if (!$('tab-scan').classList.contains('active')) activateScanTab();
-});
-$('tab-code').addEventListener('click', () => {
-  if (!$('tab-code').classList.contains('active')) activateCodeTab();
+  setTimeout(() => $('ci0').focus(), 100);
 });
 
 // Code char inputs
@@ -707,13 +586,11 @@ $('remove-file').addEventListener('click', () => {
 
 $('send-now-btn').addEventListener('click', sendContent);
 
-// Deep-link: ?code=XXXXXX
 const urlParams = new URLSearchParams(window.location.search);
 const autoCode = urlParams.get('code');
 if (autoCode && /^\d{6}$/.test(autoCode)) {
   setTimeout(async () => {
     navigateTo('send');
-    activateCodeTab();
     autoCode.split('').forEach((ch, i) => { if (charInputs[i]) charInputs[i].value = ch; });
     const ok = await connectToSession(autoCode);
     if (ok) {
