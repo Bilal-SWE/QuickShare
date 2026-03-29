@@ -332,26 +332,9 @@ async function loadStats() {
     console.warn('Visitor count failed:', e);
     $('visitor-count').textContent = '---';
   }
-
-  try {
-    // Active Sessions (real-time from Supabase)
-    if (supabase) {
-      const now = new Date().toISOString();
-      const { count, error } = await supabase
-        .from('sessions')
-        .select('*', { count: 'exact', head: true })
-        .or(`status.eq.waiting,status.eq.connected`)
-        .gt('expires_at', now);
-
-      if (!error) $('active-sessions').textContent = count || 0;
-    }
-  } catch (e) {
-    console.error('Active sessions fetch failed:', e);
-    $('active-sessions').textContent = '0';
-  }
 }
 
 // Initial Load
 loadStats();
 // Periodic Refresh for active sessions
-setInterval(loadStats, 30000); // 30s
+setInterval(loadStats, 60000); // 1m
