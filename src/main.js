@@ -253,11 +253,22 @@ $('connect-btn').onclick = async () => {
 };
 
 [0, 1, 2, 3, 4].forEach(i => {
-  $(`ci${i}`).oninput = (e) => {
-    if (e.target.value && i < 4) $(`ci${i + 1}`).focus();
+  const input = $(`ci${i}`);
+  input.oninput = (e) => {
+    const v = e.target.value.replace(/\D/g, '');
+    e.target.value = v.slice(-1);
+    if (v && i < 4) $(`ci${i + 1}`).focus();
   };
-  $(`ci${i}`).onkeydown = (e) => {
+  input.onkeydown = (e) => {
     if (e.key === 'Backspace' && !e.target.value && i > 0) $(`ci${i - 1}`).focus();
+  };
+  input.onfocus = () => {
+    // Find the first empty input
+    const inputs = [0, 1, 2, 3, 4].map(idx => $(`ci${idx}`));
+    const firstEmpty = inputs.find(inp => !inp.value);
+    if (firstEmpty && firstEmpty !== input) {
+      firstEmpty.focus();
+    }
   };
 });
 
