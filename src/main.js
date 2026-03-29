@@ -336,10 +336,12 @@ async function loadStats() {
   try {
     // Active Sessions (real-time from Supabase)
     if (supabase) {
+      const now = new Date().toISOString();
       const { count, error } = await supabase
         .from('sessions')
         .select('*', { count: 'exact', head: true })
-        .or(`status.eq.waiting,status.eq.connected`);
+        .or(`status.eq.waiting,status.eq.connected`)
+        .gt('expires_at', now);
 
       if (!error) $('active-sessions').textContent = count || 0;
     }
