@@ -223,9 +223,16 @@ async function startReceiveSession(receiverName) {
           const content = $('received-content');
           let htmlItem = '';
           if (data.type === 'link') {
-            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            // Improved regex to catch domains even without http/https
+            const urlRegex = /((https?:\/\/)|(www\.))?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi;
             const matches = data.url.match(urlRegex);
-            const firstUrl = matches ? matches[0] : null;
+            let firstUrl = matches ? matches[0] : null;
+
+            // If the URL found doesn't have a protocol, prepend https://
+            let openUrl = firstUrl;
+            if (openUrl && !openUrl.startsWith('http')) {
+              openUrl = 'https://' + openUrl;
+            }
 
             htmlItem = `
               <div class="received-link-wrap" style="padding: 15px; background: white; border: 1px solid var(--c-border); border-radius: 16px;">
@@ -235,7 +242,7 @@ async function startReceiveSession(receiverName) {
                 </div>
                 <div class="action-buttons">
                   <button class="btn-preview" onclick="navigator.clipboard.writeText('${data.url}').then(() => showToast('تم النسخ ✓'))">نسخ المحتوى</button>
-                  ${firstUrl ? `<a href="${firstUrl}" target="_blank" class="btn-download" style="font-size: 0.85rem;">فتح الرابط</a>` : ''}
+                  ${firstUrl ? `<a href="${openUrl}" target="_blank" class="btn-download" style="font-size: 0.85rem;">فتح الرابط</a>` : ''}
                 </div>
               </div>`;
           } else if (data.type === 'file') {
