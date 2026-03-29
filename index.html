@@ -5,8 +5,8 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/icon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="DropIt - نقل الملفات والروابط بين الأجهزة بسهولة وأمان" />
-  <title>DropIt — نقل فوري بين الأجهزة</title>
+  <meta name="description" content="Q-share - نقل الملفات والروابط بين الأجهزة بسهولة وأمان" />
+  <title>Q-share — نقل فوري بين الأجهزة</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap"
@@ -16,12 +16,58 @@
 
 <body>
   <div id="app">
-    <!-- Animated background -->
     <div class="bg-orbs">
       <div class="orb orb-1"></div>
       <div class="orb orb-2"></div>
       <div class="orb orb-3"></div>
     </div>
+
+    <!-- UI Overlay (Menu & Sidebar) -->
+    <header class="ui-header">
+      <button id="menu-toggle" class="icon-btn" aria-label="القائمة">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M4 6h16M4 12h16m-7 6h7" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </button>
+    </header>
+
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-title">خيارات</span>
+        <button id="sidebar-close" class="icon-btn">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item">
+          <span class="nav-icon">ℹ️</span>
+          <span>كيفية الاستخدام</span>
+        </a>
+        <a href="#" class="nav-item">
+          <span class="nav-icon">🌙</span>
+          <span>المظهر الداكن</span>
+        </a>
+        <a href="#" class="nav-item">
+          <span class="nav-icon">🌍</span>
+          <span>اللغة</span>
+        </a>
+        <div class="nav-sep"></div>
+        <a href="#" class="nav-item">
+          <span class="nav-icon">✨</span>
+          <span>عن Q-share</span>
+        </a>
+        <a href="#" class="nav-item">
+          <span class="nav-icon">📣</span>
+          <span>مشاركة التطبيق</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <p>Q-share v1.2</p>
+      </div>
+    </aside>
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
 
     <!-- Home Screen -->
     <section id="screen-home" class="screen active">
@@ -41,7 +87,7 @@
             </defs>
           </svg>
         </div>
-        <h1 class="logo-text">DropIt</h1>
+        <h1 class="logo-text">Q-share</h1>
         <p class="logo-sub">نقل فوري بين الأجهزة</p>
       </div>
 
@@ -113,10 +159,8 @@
                 <span class="code-digit" id="d0">-</span>
                 <span class="code-digit" id="d1">-</span>
                 <span class="code-digit" id="d2">-</span>
-                <span class="code-sep">·</span>
                 <span class="code-digit" id="d3">-</span>
                 <span class="code-digit" id="d4">-</span>
-                <span class="code-digit" id="d5">-</span>
               </div>
               <button class="copy-btn" id="copy-code-btn">
                 <svg viewBox="0 0 24 24" fill="none">
@@ -185,7 +229,7 @@
         <div id="send-connect" class="send-step">
           <div id="code-panel">
             <div class="code-input-wrap">
-              <p class="code-input-label">أدخل الرمز المكون من 6 أرقام</p>
+              <p class="code-input-label">أدخل الرمز المكون من 5 أرقام</p>
               <div class="code-inputs" id="code-inputs">
                 <input class="code-char" id="ci0" maxlength="1" inputmode="numeric" pattern="[0-9]"
                   aria-label="الرقم الأول" />
@@ -193,13 +237,10 @@
                   aria-label="الرقم الثاني" />
                 <input class="code-char" id="ci2" maxlength="1" inputmode="numeric" pattern="[0-9]"
                   aria-label="الرقم الثالث" />
-                <span class="code-input-sep">·</span>
                 <input class="code-char" id="ci3" maxlength="1" inputmode="numeric" pattern="[0-9]"
                   aria-label="الرقم الرابع" />
                 <input class="code-char" id="ci4" maxlength="1" inputmode="numeric" pattern="[0-9]"
                   aria-label="الرقم الخامس" />
-                <input class="code-char" id="ci5" maxlength="1" inputmode="numeric" pattern="[0-9]"
-                  aria-label="الرقم السادس" />
               </div>
               <p id="code-error" class="code-error hidden">رمز غير صحيح أو منتهي الصلاحية</p>
               <button class="btn-primary" id="connect-btn">اتصال</button>

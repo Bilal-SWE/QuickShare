@@ -45,7 +45,7 @@ const $ = id => document.getElementById(id);
 // Utilities
 // ──────────────────────────────────────────────
 function generateCode() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  return Math.floor(10000 + Math.random() * 90000).toString();
 }
 
 function formatBytes(bytes) {
@@ -254,8 +254,8 @@ async function startReceiveSession() {
 // ──────────────────────────────────────────────
 async function connectToSession(code) {
   code = code.trim();
-  if (!/^\d{6}$/.test(code)) {
-    showCodeError('يرجى إدخال رمز مكون من 6 أرقام');
+  if (!/^\d{5}$/.test(code)) {
+    showCodeError('يرجى إدخال رمز مكون من 5 أرقام');
     return false;
   }
 
@@ -438,11 +438,11 @@ function showSendDone() {
 // Code Inputs
 // ──────────────────────────────────────────────
 function getEnteredCode() {
-  return [0, 1, 2, 3, 4, 5].map(i => $(`ci${i}`).value).join('');
+  return [0, 1, 2, 3, 4].map(i => $(`ci${i}`).value).join('');
 }
 
 function clearCodeInputs() {
-  [0, 1, 2, 3, 4, 5].forEach(i => { $(`ci${i}`).value = ''; });
+  [0, 1, 2, 3, 4].forEach(i => { $(`ci${i}`).value = ''; });
   $('ci0').focus();
 }
 
@@ -525,18 +525,13 @@ $('send-again-btn').addEventListener('click', () => {
   $('send-content').classList.remove('hidden');
 });
 
-$('end-session-btn').addEventListener('click', () => {
-  resetSendScreen();
-  setTimeout(() => $('ci0').focus(), 100);
-});
-
 // Code char inputs
-const charInputs = [0, 1, 2, 3, 4, 5].map(i => $(`ci${i}`));
+const charInputs = [0, 1, 2, 3, 4].map(i => $(`ci${i}`));
 charInputs.forEach((input, idx) => {
   input.addEventListener('input', () => {
     const v = input.value.replace(/\D/g, '');
     input.value = v.slice(-1);
-    if (v && idx < 5) charInputs[idx + 1].focus();
+    if (v && idx < 4) charInputs[idx + 1].focus();
   });
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Backspace' && !input.value && idx > 0) charInputs[idx - 1].focus();
@@ -544,10 +539,35 @@ charInputs.forEach((input, idx) => {
   input.addEventListener('paste', (e) => {
     e.preventDefault();
     const pasted = (e.clipboardData || window.clipboardData)
-      .getData('text').replace(/\D/g, '').slice(0, 6);
+      .getData('text').replace(/\D/g, '').slice(0, 5);
     pasted.split('').forEach((ch, i) => { if (charInputs[i]) charInputs[i].value = ch; });
     const nextEmpty = charInputs.find(c => !c.value);
     if (nextEmpty) nextEmpty.focus();
+  });
+});
+
+$('end-session-btn').addEventListener('click', () => {
+  resetSendScreen();
+  setTimeout(() => $('ci0').focus(), 100);
+});
+
+// Sidebar logic
+const toggleSidebar = (show) => {
+  $('sidebar').classList.toggle('active', show);
+  $('sidebar-overlay').classList.toggle('active', show);
+  document.body.style.overflow = show ? 'hidden' : '';
+};
+
+$('menu-toggle').addEventListener('click', () => toggleSidebar(true));
+$('sidebar-close').addEventListener('click', () => toggleSidebar(false));
+$('sidebar-overlay').addEventListener('click', () => toggleSidebar(false));
+
+// Close sidebar on nav item click
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', (e) => {
+    e.preventDefault();
+    toggleSidebar(false);
+    showToast('قريباً...');
   });
 });
 
@@ -633,7 +653,7 @@ $('send-now-btn').addEventListener('click', sendContent);
 
 const urlParams = new URLSearchParams(window.location.search);
 const autoCode = urlParams.get('code');
-if (autoCode && /^\d{6}$/.test(autoCode)) {
+if (autoCode && /^\d{5}$/.test(autoCode)) {
   setTimeout(async () => {
     navigateTo('send');
     autoCode.split('').forEach((ch, i) => { if (charInputs[i]) charInputs[i].value = ch; });
