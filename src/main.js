@@ -86,13 +86,24 @@ function startRenewGracePeriod() {
 }
 
 async function disconnectSession() {
-  clearInterval(timerInterval);
-  if (realtimeChannel) { supabase.removeChannel(realtimeChannel); realtimeChannel = null; }
-  if (currentSessionCode && supabase) {
-    await supabase.from('sessions').delete().eq('code', currentSessionCode).catch(() => { });
-    currentSessionCode = null;
-  }
+  // Immediate UI feedback
   navigateTo('home');
+  clearInterval(timerInterval);
+
+  if (realtimeChannel) {
+    supabase.removeChannel(realtimeChannel);
+    realtimeChannel = null;
+  }
+
+  if (currentSessionCode && supabase) {
+    const codeToClean = currentSessionCode;
+    currentSessionCode = null;
+    try {
+      await supabase.from('sessions').delete().eq('code', codeToClean);
+    } catch (e) {
+      console.warn('Cleanup failed:', e);
+    }
+  }
 }
 
 // ──────────────────────────────────────────────
