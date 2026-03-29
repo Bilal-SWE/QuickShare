@@ -194,7 +194,13 @@ async function connectToSession(code) {
   $('connect-btn').textContent = 'جارِ الاتصال...';
 
   const { data, error } = await supabase.from('sessions').select('*').eq('code', code).single();
-  if (error || !data) { showToast('الرمز غير صحيح'); resetConnectBtn(); return false; }
+  if (error || !data) {
+    showToast('الرمز غير صحيح');
+    [0, 1, 2, 3, 4].forEach(i => { $(`ci${i}`).value = ''; });
+    $(`ci0`).focus();
+    resetConnectBtn();
+    return false;
+  }
 
   await supabase.from('sessions').update({ status: 'connected' }).eq('code', code);
   connectedCode = code;
