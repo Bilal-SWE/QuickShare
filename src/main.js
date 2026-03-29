@@ -122,21 +122,24 @@ function stopTimer() { clearInterval(timerInterval); }
 // ──────────────────────────────────────────────
 // RECEIVE FLOW
 // ──────────────────────────────────────────────
-async function startReceiveSession() {
+async function startReceiveSession(receiverName) {
   // Reset UI
+  $('receive-name-step').classList.add('hidden');
   $('receive-loading').innerHTML = `
     <div class="spinner"></div>
     <span>جاري إعداد جلسة الاستقبال…</span>`;
   $('receive-loading').classList.remove('hidden');
   $('receive-ready').classList.add('hidden');
   $('receive-done').classList.add('hidden');
+  $('connected-sender-info').classList.add('hidden');
+  $('renew-timer-panel').classList.add('hidden');
 
   if (!isConfigured || !supabase) { showConfigPrompt(); return; }
 
   try {
     // Clean up previous session
     if (currentSessionCode) {
-      await supabase.from('sessions').delete().eq('code', currentSessionCode);
+      await supabase.from('sessions').delete().eq('code', currentSessionCode).catch(() => { });
     }
     if (realtimeChannel) {
       supabase.removeChannel(realtimeChannel);
@@ -152,34 +155,31 @@ async function startReceiveSession() {
       if (el) el.textContent = ch;
     });
 
-    // Create session in Supabase
+    // Create session in Supabase with receiver name
     const expiresAt = new Date(Date.now() + SESSION_TTL * 1000).toISOString();
     const { error: insertError } = await supabase.from('sessions').insert({
       code,
       status: 'waiting',
       expires_at: expiresAt,
+      receiver_name: receiverName || 'مستقبل مجهول'
     });
 
     if (insertError) throw insertError;
 
-    // Generate QR Code
+    // Generate QR Code with light theme colors
     const qrData = `${window.location.origin}${window.location.pathname}?code=${code}`;
     await QRCode.toCanvas($('qr-canvas'), qrData, {
       width: 200,
       margin: 1,
-      color: { dark: '#0d0f1a', light: '#ffffff' },
+      color: { dark: '#1a1c24', light: '#ffffff' },
       errorCorrectionLevel: 'H',
     });
 
     $('receive-loading').classList.add('hidden');
     $('receive-ready').classList.remove('hidden');
 
-    // Start timer
-    startTimer(SESSION_TTL, () => {
-      showToast('انتهت صلاحية الجلسة');
-      supabase.from('sessions').delete().eq('code', code);
-      startReceiveSession();
-    });
+    // Start timer logic
+    initSessionTimer(SESSION_TTL);
 
     // Listen for session changes via Realtime
     realtimeChannel = supabase
@@ -194,18 +194,19 @@ async function startReceiveSession() {
 
         // ── Sender connected ──
         if (data.status === 'connected') {
-          const statusText = $('receive-status-text');
-          if (statusText) {
-            statusText.textContent = '✅ تم الاتصال! في انتظار الملف أو الرابط…';
-            statusText.style.color = 'var(--c-green)';
+          const senderInfo = $('connected-sender-info');
+          const senderNameEl = $('sender-display-name');
+          if (senderInfo && senderNameEl) {
+            senderNameEl.textContent = data.sender_name || 'مرسل متصل';
+            senderInfo.classList.remove('hidden');
           }
-          const dot = document.querySelector('.pulse-dot');
-          if (dot) dot.classList.add('green');
-          showToast('✅ اتصل بك المُرسِل!');
+          showToast('✅ اتصل بك: ' + (data.sender_name || 'مُرسل جديد'));
         }
 
         // ── File/Link transferred ──
         if (data.status === 'transferred') {
+          // Keep receiver-ready for multiple uploads if needed, 
+          // but the user wants to see results. I'll show them in a list.
           $('receive-ready').classList.add('hidden');
           $('receive-done').classList.remove('hidden');
 
@@ -213,29 +214,32 @@ async function startReceiveSession() {
           let htmlItem = '';
           if (data.type === 'link') {
             const isUrl = data.url.startsWith('http://') || data.url.startsWith('https://');
-            const displayContent = isUrl
-              ? `<a href="${data.url}" target="_blank" rel="noopener" style="word-break: break-all;">${data.url}</a>`
-              : `<div style="white-space: pre-wrap; word-break: break-word; text-align: right; width: 100%;">${data.url}</div>`;
 
             htmlItem = `
-              <div class="received-link-wrap" style="align-items: flex-start; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px;">
-                <svg style="flex-shrink:0;width:20px;height:20px;color:var(--c-teal);margin-top:2px; margin-left: 8px;" viewBox="0 0 24 24" fill="none">
-                  <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                ${displayContent}
+              <div class="received-link-wrap" style="padding: 15px; background: white; border: 1px solid var(--c-border); border-radius: 16px;">
+                <div style="display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px;">
+                   <span style="font-size: 1.25rem;">🔗</span>
+                   <div style="word-break: break-all; font-size: 0.95rem;">${data.url}</div>
+                </div>
+                <div class="action-buttons">
+                  <button class="btn-preview" onclick="navigator.clipboard.writeText('${data.url}').then(() => showToast('تم النسخ ✓'))">نسخ النص</button>
+                  ${isUrl ? `<a href="${data.url}" target="_blank" class="btn-download" style="font-size: 0.85rem;">فتح الرابط</a>` : ''}
+                </div>
               </div>`;
           } else if (data.type === 'file') {
             htmlItem = `
-              <div class="received-file-wrap" style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px;">
-                <p class="received-file-name" style="margin-bottom: 8px;">📁 ${data.file_name}</p>
-                <a class="btn-download" href="${data.download_url}" target="_blank" download="${data.file_name}">
-                  <svg viewBox="0 0 24 24" fill="none" style="width:18px;height:18px; margin-left: 5px;">
-                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <polyline points="7 10 12 15 17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                  </svg>
-                  تحميل الملف
-                </a>
+              <div class="received-file-wrap" style="padding: 15px; background: white; border: 1px solid var(--c-border); border-radius: 16px;">
+                <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
+                   <span style="font-size: 1.5rem;">📁</span>
+                   <div style="overflow: hidden;">
+                     <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${data.file_name}</div>
+                     <div style="font-size: 0.75rem; color: var(--c-text-muted);">${formatBytes(data.file_size)}</div>
+                   </div>
+                </div>
+                <div class="action-buttons">
+                  <a href="${data.download_url}" target="_blank" class="btn-preview">استعراض</a>
+                  <a href="${data.download_url}" target="_blank" download="${data.file_name}" class="btn-download">تحميل</a>
+                </div>
               </div>`;
           }
           content.insertAdjacentHTML('beforeend', htmlItem);
@@ -247,6 +251,68 @@ async function startReceiveSession() {
     console.error('Receive error:', err);
     showReceiveError('تعذر الاتصال. تحقق من إعدادات Supabase.');
   }
+}
+
+function initSessionTimer(seconds) {
+  let remaining = seconds;
+  clearInterval(timerInterval);
+
+  // Updates UI
+  const updateUI = () => {
+    const m = Math.floor(remaining / 60);
+    const s = remaining % 60;
+    $('timer-text').textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    $('timer-display-text').textContent = `${m} دقائق`;
+
+    const pct = (remaining / seconds) * 100;
+    $('timer-circle').setAttribute('stroke-dasharray', `${pct} 100`);
+  };
+
+  updateUI();
+
+  timerInterval = setInterval(async () => {
+    remaining--;
+    updateUI();
+
+    if (remaining <= 0) {
+      clearInterval(timerInterval);
+      startRenewGracePeriod();
+    }
+  }, 1000);
+}
+
+function startRenewGracePeriod() {
+  $('renew-timer-panel').classList.remove('hidden');
+  let countdown = 30;
+  $('renew-countdown').textContent = countdown;
+
+  const graceInterval = setInterval(() => {
+    countdown--;
+    $('renew-countdown').textContent = countdown;
+
+    if (countdown <= 0) {
+      clearInterval(graceInterval);
+      disconnectSession();
+    }
+  }, 1000);
+
+  // If user clicks renew
+  $('renew-time-btn').onclick = () => {
+    clearInterval(graceInterval);
+    $('renew-timer-panel').classList.add('hidden');
+    initSessionTimer(SESSION_TTL);
+    showToast('تم تجديد الوقت لـ 10 دقائق إضافية');
+  };
+}
+
+async function disconnectSession() {
+  stopTimer();
+  if (realtimeChannel) { supabase.removeChannel(realtimeChannel); realtimeChannel = null; }
+  if (currentSessionCode && supabase) {
+    await supabase.from('sessions').delete().eq('code', currentSessionCode).catch(() => { });
+    currentSessionCode = null;
+  }
+  navigateTo('home');
 }
 
 // ──────────────────────────────────────────────
@@ -293,8 +359,12 @@ async function connectToSession(code) {
       return false;
     }
 
-    // Mark session as connected so receiver knows
-    await supabase.from('sessions').update({ status: 'connected' }).eq('code', code);
+    // Mark session as connected and send sender's name
+    const senderName = prompt('أدخل اسمك ليظهر للمستقبل:') || 'مرسل مجهول';
+    await supabase.from('sessions').update({
+      status: 'connected',
+      sender_name: senderName
+    }).eq('code', code);
 
     connectedCode = code;
     resetConnectBtn();
@@ -472,24 +542,27 @@ function resetSendScreen() {
 // ──────────────────────────────────────────────
 // Event Listeners
 // ──────────────────────────────────────────────
+$('back-from-receive').addEventListener('click', disconnectSession);
+$('disconnect-btn').addEventListener('click', disconnectSession);
+
+$('start-session-btn').addEventListener('click', () => {
+  const name = $('receiver-name-input').value.trim();
+  if (!name) { showToast('يرجى إدخال اسمك أولاً'); return; }
+  startReceiveSession(name);
+});
+
 $('btn-receive').addEventListener('click', () => {
   navigateTo('receive');
-  startReceiveSession();
+  $('receive-name-step').classList.remove('hidden');
+  $('receive-loading').classList.add('hidden');
+  $('receive-ready').classList.add('hidden');
+  $('receive-done').classList.add('hidden');
+  $('receiver-name-input').focus();
 });
 
 $('btn-send').addEventListener('click', () => {
   navigateTo('send');
   setTimeout(() => $('ci0').focus(), 400);
-});
-
-$('back-from-receive').addEventListener('click', async () => {
-  stopTimer();
-  if (realtimeChannel) { supabase.removeChannel(realtimeChannel); realtimeChannel = null; }
-  if (currentSessionCode && supabase) {
-    await supabase.from('sessions').delete().eq('code', currentSessionCode).catch(() => { });
-    currentSessionCode = null;
-  }
-  navigateTo('home');
 });
 
 $('back-from-send').addEventListener('click', () => {
@@ -507,7 +580,8 @@ $('copy-code-btn').addEventListener('click', () => {
 
 $('receive-again-btn').addEventListener('click', () => {
   $('received-content').innerHTML = '';
-  startReceiveSession();
+  const currentName = $('receiver-name-input').value.trim();
+  startReceiveSession(currentName);
 });
 
 $('send-again-btn').addEventListener('click', () => {

@@ -138,23 +138,44 @@
         </div>
 
         <div class="receive-body">
+          <!-- Step 1: Enter Name -->
+          <div id="receive-name-step" class="receive-step-pane">
+            <div class="screen-header">
+              <h2>استقبال ملفات</h2>
+              <p>أدخل اسمك المستعار للبدء</p>
+            </div>
+            <div class="name-input-group">
+              <input type="text" id="receiver-name-input" class="text-input" placeholder="مثلاً: خالد، هاتف سامسونج..."
+                maxlength="20">
+              <button class="btn-primary" id="start-session-btn">بدء الجلسة</button>
+            </div>
+          </div>
+
           <!-- Loading State -->
-          <div id="receive-loading" class="loading-state">
+          <div id="receive-loading" class="loading-state hidden">
             <div class="spinner"></div>
             <span>جاري إعداد جلسة الاستقبال…</span>
           </div>
 
           <!-- Ready State -->
           <div id="receive-ready" class="receive-ready hidden">
-            <div class="qr-container">
-              <canvas id="qr-canvas"></canvas>
-              <div class="qr-label">امسح الباركود</div>
+            <!-- Connected Info (Hidden until sender connects) -->
+            <div id="connected-sender-info" class="connected-info hidden">
+              <div class="connected-user-icon">👤</div>
+              <div class="connected-user-details">
+                <div class="connected-user-name" id="sender-display-name">جاري الاتصال...</div>
+                <div style="font-size: 0.75rem; color: var(--c-text-muted);">متصل الآن</div>
+              </div>
             </div>
 
-            <div class="divider-or"><span>أو</span></div>
+            <div class="qr-container">
+              <canvas id="qr-canvas"></canvas>
+              <div class="qr-label">امسح الباركود للاتصال السريع</div>
+            </div>
+
+            <div class="divider-or"><span>أو استخدم الرمز</span></div>
 
             <div class="code-display-wrap">
-              <p class="code-label">الرمز الفريد</p>
               <div class="code-display" id="display-code">
                 <span class="code-digit" id="d0">-</span>
                 <span class="code-digit" id="d1">-</span>
@@ -162,34 +183,34 @@
                 <span class="code-digit" id="d3">-</span>
                 <span class="code-digit" id="d4">-</span>
               </div>
-              <button class="copy-btn" id="copy-code-btn">
-                <svg viewBox="0 0 24 24" fill="none">
-                  <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2" />
-                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2" />
+              <button class="copy-btn" id="copy-code-btn" style="margin-top: 5px;">نسخ الرمز</button>
+            </div>
+
+            <div class="timer-section">
+              <div class="timer-wrap">
+                <svg class="timer-ring" viewBox="0 0 36 36">
+                  <circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(0,0,0,0.05)" stroke-width="2" />
+                  <circle id="timer-circle" cx="18" cy="18" r="15.9" fill="none" stroke="url(#tg)" stroke-width="2"
+                    stroke-dasharray="100 100" stroke-dashoffset="0" stroke-linecap="round"
+                    transform="rotate(-90 18 18)" />
                 </svg>
-                نسخ الرمز
-              </button>
+                <span id="timer-text">10:00</span>
+              </div>
+              <p class="session-info-text">سينتهي وقت الجلسة بعد <span id="timer-display-text">10 دقائق</span></p>
             </div>
 
-            <div class="receive-status">
-              <div class="pulse-dot"></div>
-              <span id="receive-status-text">في انتظار المُرسِل…</span>
+            <!-- Renew Timer Panel -->
+            <div id="renew-timer-panel" class="renew-timer hidden">
+              <span>⚠️ تنبيه: ستنتهي الجلسة قريباً!</span>
+              <button class="btn-primary" id="renew-time-btn"
+                style="margin-top: 5px; padding: 0.5rem 1rem; font-size: 0.85rem;">تجديد الوقت (10 دقائق)</button>
+              <span style="font-size: 0.7rem;">سيتم قطع الاتصال تلقائياً خلال <span id="renew-countdown">30</span>
+                ثانية</span>
             </div>
 
-            <div class="timer-wrap">
-              <svg class="timer-ring" viewBox="0 0 36 36">
-                <circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2" />
-                <circle id="timer-circle" cx="18" cy="18" r="15.9" fill="none" stroke="url(#tg)" stroke-width="2"
-                  stroke-dasharray="100 100" stroke-dashoffset="0" stroke-linecap="round"
-                  transform="rotate(-90 18 18)" />
-                <defs>
-                  <linearGradient id="tg" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#6C63FF" />
-                    <stop offset="100%" stop-color="#3ECFCF" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <span id="timer-text">10:00</span>
+            <div class="action-buttons" style="margin-top: 2rem;">
+              <button class="btn-outline" id="disconnect-btn"
+                style="width: 100%; color: var(--c-red); border-color: rgba(239, 68, 68, 0.2);">قطع الاتصال</button>
             </div>
           </div>
 
