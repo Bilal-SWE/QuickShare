@@ -124,6 +124,7 @@ function stopTimer() { clearInterval(timerInterval); }
 // ──────────────────────────────────────────────
 async function startReceiveSession(receiverName) {
   // Reset UI
+  $('receive-header').classList.remove('hidden');
   $('receive-name-step').classList.add('hidden');
   $('receive-loading').innerHTML = `
     <div class="spinner"></div>
@@ -217,6 +218,7 @@ async function startReceiveSession(receiverName) {
         if (data.status === 'transferred') {
           // Keep receiver-ready for multiple uploads if needed, 
           // but the user wants to see results. I'll show them in a list.
+          $('receive-header').classList.add('hidden');
           $('receive-ready').classList.add('hidden');
           $('receive-done').classList.remove('hidden');
 
@@ -532,6 +534,7 @@ async function sendLink(url) {
 }
 
 function showSendDone() {
+  $('send-header').classList.add('hidden');
   $('send-content').classList.add('hidden');
   $('send-done').classList.remove('hidden');
 }
@@ -554,6 +557,7 @@ function clearCodeInputs() {
 function resetSendScreen() {
   connectedCode = null;
   selectedFiles = [];
+  $('send-header').classList.remove('hidden');
   $('send-connect').classList.remove('hidden');
   $('send-content').classList.add('hidden');
   $('send-done').classList.add('hidden');

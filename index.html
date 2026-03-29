@@ -132,7 +132,7 @@
       </button>
 
       <div class="screen-content">
-        <div class="screen-header">
+        <div class="screen-header" id="receive-header">
           <h2>جاهز للاستقبال</h2>
           <p>شارك الرمز أو الباركود مع المُرسِل</p>
         </div>
@@ -241,7 +241,7 @@
       </button>
 
       <div class="screen-content">
-        <div class="screen-header">
+        <div class="screen-header" id="send-header">
           <h2>إرسال</h2>
           <p>اتصل بجهاز المستقبِل أولاً</p>
         </div>
@@ -343,14 +343,14 @@
         </div>
 
         <!-- Send Done -->
-        <div id="send-done" class="send-step hidden">
+        <div id="send-done" class="send-step send-done-content hidden">
           <div class="done-icon success">
             <svg viewBox="0 0 24 24" fill="none">
               <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
                 stroke-linejoin="round" />
             </svg>
           </div>
-          <h3>تم الإرسال بنجاح!</h3>
+          <h3 style="margin-top: 10px;">تم الإرسال بنجاح!</h3>
           <p class="done-sub">استلم المستخدم الآخر المحتوى</p>
           <button class="btn-primary" id="send-again-btn">إرسال المزيد لنفس المستقبِل</button>
           <button class="btn-outline" id="end-session-btn" style="margin-top: 10px; width: 100%;">إنهاء الجلسة</button>
