@@ -117,7 +117,7 @@ async function startReceiveSession() {
     if (insErr) throw insErr;
 
     const qrData = `${window.location.origin}${window.location.pathname}?code=${code}`;
-    await QRCode.toCanvas($('qr-canvas'), qrData, { width: 180, margin: 1, color: { dark: '#f97316', light: '#ffffff' } });
+    await QRCode.toCanvas($('qr-canvas'), qrData, { width: 180, margin: 1, color: { dark: '#000000', light: '#ffffff' } });
 
     $('receive-loading').classList.add('hidden');
     $('receive-ready').classList.remove('hidden');

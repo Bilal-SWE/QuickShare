@@ -431,6 +431,23 @@ header {
   color: var(--c-primary);
 }
 
+.qr-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 1.5rem 0;
+}
+
+#qr-canvas {
+  width: 180px;
+  height: 180px;
+  border-radius: 12px;
+  border: 1px solid var(--c-border);
+  padding: 8px;
+  background: #fff;
+}
+
 .drop-zone {
   border: 3px dashed var(--c-border);
   border-radius: 20px;
