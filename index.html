@@ -5,351 +5,300 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/icon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Q-Share - نقل الملفات والروابط بين الأجهزة بسهولة وأمان" />
-  <title>Q-Share — نقل فوري بين الأجهزة</title>
+  <meta name="description" content="DropIt - نقل الملفات والروابط بين الأجهزة بسهولة وأمان" />
+  <title>DropIt — نقل فوري بين الأجهزة</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="/style.css" />
 </head>
 
 <body>
-  <!-- Mesh Background -->
-  <div class="mesh-bg">
-    <div class="mesh-orb mesh-1"></div>
-    <div class="mesh-orb mesh-2"></div>
-    <div class="mesh-orb mesh-3"></div>
-  </div>
+  <div id="app">
+    <!-- Animated background -->
+    <div class="bg-orbs">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
 
-  <!-- Navbar -->
-  <nav class="navbar">
-    <div class="nav-container">
-      <div class="nav-brand">
-        <div class="logo-icon-sm">
+    <!-- Home Screen -->
+    <section id="screen-home" class="screen active">
+      <div class="logo-wrap">
+        <div class="logo-icon">
           <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="32" cy="32" r="32" fill="url(#nav-lg)" />
+            <circle cx="32" cy="32" r="32" fill="url(#lg1)" />
             <path d="M20 26l12 12 12-12" stroke="#fff" stroke-width="3" stroke-linecap="round"
               stroke-linejoin="round" />
             <path d="M32 16v22" stroke="#fff" stroke-width="3" stroke-linecap="round" />
+            <path d="M18 44h28" stroke="#fff" stroke-width="3" stroke-linecap="round" />
             <defs>
-              <linearGradient id="nav-lg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+              <linearGradient id="lg1" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
                 <stop stop-color="#6C63FF" />
                 <stop offset="1" stop-color="#3ECFCF" />
               </linearGradient>
             </defs>
           </svg>
         </div>
-        <span class="nav-logo-text">Q-Share</span>
+        <h1 class="logo-text">DropIt</h1>
+        <p class="logo-sub">نقل فوري بين الأجهزة</p>
       </div>
-      <div class="nav-links">
-        <a href="#features" data-i18n="nav_features">المميزات</a>
-        <a href="#how-it-works" data-i18n="nav_how">كيف يعمل؟</a>
-        <div class="nav-actions">
-          <button class="lang-toggle" id="lang-toggle-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+
+      <div class="home-cards">
+        <button id="btn-send" class="card card-send" aria-label="إرسال ملف أو رابط">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+              <path d="M22 2L15 22 11 13 2 9l20-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
             </svg>
-            <span id="lang-label">EN</span>
-          </button>
-          <button class="nav-btn" id="nav-btn-start" data-i18n="nav_start">ابدأ الآن</button>
-        </div>
-      </div>
-    </div>
-  </nav>
-
-  <main>
-    <!-- Hero Section -->
-    <section class="hero-section">
-      <div class="hero-content">
-        <div class="badge-new" data-i18n="hero_badge">تحديث: نقل ملفات متعددة متوفر الآن! ✨</div>
-        <h1 class="hero-title" data-i18n="hero_title">نقل الملفات والروابط <br><span class="gradient-text">بلمحة بصر
-            (Q-Share)</span></h1>
-        <p class="hero-description" data-i18n="hero_desc">أسرع وسيلة لنقل ملفاتك بين هاتفك وحواسبك دون الحاجة لحساب أو
-          تسجيل دخول. آمن، مشفر، ومجاني تماماً.</p>
-
-        <div class="hero-actions">
-          <a href="#app-container" class="btn-hero-primary" id="hero-send" data-i18n="hero_btn_send">إرسال ملف</a>
-          <a href="#app-container" class="btn-hero-outline" id="hero-receive" data-i18n="hero_btn_receive">استقبال</a>
-        </div>
-      </div>
-
-      <div class="hero-visual">
-        <div class="floating-elements">
-          <div class="element el-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" />
-            </svg></div>
-          <div class="element el-2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
-              <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
-            </svg></div>
-          <div class="element el-3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-              <polyline points="17 8 12 3 7 8" />
-              <line x1="12" y1="3" x2="12" y2="15" />
-            </svg></div>
-        </div>
-        <div class="main-card-visual">
-          <div class="visual-header">
-            <div class="dot red"></div>
-            <div class="dot yellow"></div>
-            <div class="dot green"></div>
           </div>
-          <div class="visual-body">
-            <div class="visual-line l1"></div>
-            <div class="visual-line l2"></div>
-            <div class="visual-line l3"></div>
-            <div class="visual-progress">
-              <div class="v-bar"></div>
-            </div>
+          <span class="card-title">إرسال</span>
+          <span class="card-desc">أرسل ملفاً أو رابطاً</span>
+        </button>
+
+        <button id="btn-receive" class="card card-receive" aria-label="استقبال ملف أو رابط">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 2v15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              <path d="M7 12l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+              <path d="M4 20h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
           </div>
-        </div>
+          <span class="card-title">استقبال</span>
+          <span class="card-desc">احصل على رمز الاستقبال</span>
+        </button>
       </div>
+
+      <p class="home-hint">آمن • سريع • مؤقت</p>
     </section>
 
-    <!-- Features Section -->
-    <section id="features" class="features-section">
-      <div class="section-header">
-        <h2 class="section-title" data-i18n="features_title">لماذا تختار <span class="gradient-text">Q-Share</span>؟
-        </h2>
-      </div>
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon i-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg></div>
-          <h3 data-i18n="feat_1_title">خصوصية تامة</h3>
-          <p data-i18n="feat_1_desc">يتم حذف جميع الملفات والروابط تلقائياً بعد مرور 10 دقائق من الاستخدام.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon i-2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-            </svg></div>
-          <h3 data-i18n="feat_2_title">سرعة فائقة</h3>
-          <p data-i18n="feat_2_desc">تقنيات متطورة تضمن لك وصول الملفات في أجزاء من الثانية فور الضغط على إرسال.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon i-3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
-              <path d="M13.73 21a2 2 0 01-3.46 0" />
-            </svg></div>
-          <h3 data-i18n="feat_3_title">لا حاجة للتسجيل</h3>
-          <p data-i18n="feat_3_desc">ابدأ النقل فوراً دون بريد إلكتروني أو كلمات مرور. فقط الرمز ولقد بدأت!</p>
-        </div>
-      </div>
-    </section>
+    <!-- Receive Screen -->
+    <section id="screen-receive" class="screen">
+      <button class="back-btn" id="back-from-receive" aria-label="رجوع">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M19 12H5M12 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </button>
 
-    <!-- App Section -->
-    <section id="app-container" class="app-section">
-      <div id="app" class="glass-app">
-        <!-- Screens -->
-        <!-- Home Screen / Select Mode -->
-        <div id="screen-home" class="screen active">
-          <div class="mode-selector">
-            <button id="btn-send" class="mode-card send">
-              <div class="mode-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M22 2L11 13" />
-                  <path d="M22 2L15 22 11 13 2 9l20-7z" />
-                </svg></div>
-              <h3 data-i18n="app_send">إرسال</h3>
-              <p data-i18n="app_send_desc">رفع ملفات أو كتابة روابط</p>
-            </button>
-            <button id="btn-receive" class="mode-card receive">
-              <div class="mode-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 2v15" />
-                  <path d="M7 12l5 5 5-5" />
-                  <path d="M4 20h16" />
-                </svg></div>
-              <h3 data-i18n="app_receive">استقبال</h3>
-              <p data-i18n="app_receive_desc">الحصول على رمز الاستقبال</p>
-            </button>
+      <div class="screen-content">
+        <div class="screen-header">
+          <h2>جاهز للاستقبال</h2>
+          <p>شارك الرمز أو الباركود مع المُرسِل</p>
+        </div>
+
+        <div class="receive-body">
+          <!-- Loading State -->
+          <div id="receive-loading" class="loading-state">
+            <div class="spinner"></div>
+            <span>جاري إعداد جلسة الاستقبال…</span>
           </div>
-        </div>
 
-        <!-- Receive Screen -->
-        <section id="screen-receive" class="screen">
-          <button class="back-btn" id="back-from-receive" aria-label="back">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M19 12H5M12 5l-7 7 7 7" />
-            </svg>
-          </button>
-          <div class="app-content-inner">
-            <div class="inner-header">
-              <h2 data-i18n="rec_title">جاهز للاستقبال</h2>
-              <p data-i18n="rec_desc">شارك الرمز أو الباركود مع المُرسِل</p>
+          <!-- Ready State -->
+          <div id="receive-ready" class="receive-ready hidden">
+            <div class="qr-container">
+              <canvas id="qr-canvas"></canvas>
+              <div class="qr-label">امسح الباركود</div>
             </div>
 
-            <div id="receive-loading" class="loading-state">
-              <div class="spinner"></div>
-              <span data-i18n="rec_loading">جاري إعداد الجلسة...</span>
-            </div>
+            <div class="divider-or"><span>أو</span></div>
 
-            <div id="receive-ready" class="receive-parts hidden">
-              <div class="qr-box">
-                <canvas id="qr-canvas"></canvas>
+            <div class="code-display-wrap">
+              <p class="code-label">الرمز الفريد</p>
+              <div class="code-display" id="display-code">
+                <span class="code-digit" id="d0">-</span>
+                <span class="code-digit" id="d1">-</span>
+                <span class="code-digit" id="d2">-</span>
+                <span class="code-sep">·</span>
+                <span class="code-digit" id="d3">-</span>
+                <span class="code-digit" id="d4">-</span>
+                <span class="code-digit" id="d5">-</span>
               </div>
-              <div class="code-box">
-                <div class="code-digits" id="display-code">
-                  <span class="digit" id="d0">-</span>
-                  <span class="digit" id="d1">-</span>
-                  <span class="digit" id="d2">-</span>
-                  <span class="digit-sep">·</span>
-                  <span class="digit" id="d3">-</span>
-                  <span class="digit" id="d4">-</span>
-                  <span class="digit" id="d5">-</span>
-                </div>
-                <button class="btn-copy" id="copy-code-btn" data-i18n="rec_copy">نسخ الرمز</button>
-              </div>
-              <div class="status-indicator">
-                <div class="pulse-ring"></div>
-                <span id="receive-status-text" data-i18n="rec_status_wait">بانتظار المُرسِل...</span>
-              </div>
-              <div class="timer-display">
-                <svg class="timer-svg" viewBox="0 0 36 36">
-                  <circle class="timer-bg" cx="18" cy="18" r="16" />
-                  <circle id="timer-circle" class="timer-progress" cx="18" cy="18" r="16" stroke-dasharray="100 100" />
+              <button class="copy-btn" id="copy-code-btn">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2" />
+                  <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2" />
                 </svg>
-                <span id="timer-text">10:00</span>
-              </div>
+                نسخ الرمز
+              </button>
             </div>
 
-            <div id="receive-done" class="receive-done-state hidden">
-              <div class="success-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg></div>
-              <h3 data-i18n="rec_done_title">وصلت الملفات!</h3>
-              <div id="received-content" class="download-list"></div>
-              <button class="btn-primary" id="receive-again-btn" data-i18n="rec_again">استقبال ملف جديد</button>
+            <div class="receive-status">
+              <div class="pulse-dot"></div>
+              <span id="receive-status-text">في انتظار المُرسِل…</span>
+            </div>
+
+            <div class="timer-wrap">
+              <svg class="timer-ring" viewBox="0 0 36 36">
+                <circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2" />
+                <circle id="timer-circle" cx="18" cy="18" r="15.9" fill="none" stroke="url(#tg)" stroke-width="2"
+                  stroke-dasharray="100 100" stroke-dashoffset="0" stroke-linecap="round"
+                  transform="rotate(-90 18 18)" />
+                <defs>
+                  <linearGradient id="tg" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#6C63FF" />
+                    <stop offset="100%" stop-color="#3ECFCF" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <span id="timer-text">10:00</span>
             </div>
           </div>
-        </section>
 
-        <!-- Send Screen -->
-        <section id="screen-send" class="screen">
-          <button class="back-btn" id="back-from-send" aria-label="back">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M19 12H5M12 5l-7 7 7 7" />
+          <!-- Received State -->
+          <div id="receive-done" class="receive-done hidden">
+            <div class="done-icon success" style="margin-bottom: 10px;">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </div>
+            <h3 style="margin-bottom: 15px;">تم الاستقبال!</h3>
+            <div id="received-content" class="received-content"
+              style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;"></div>
+            <button class="btn-primary" id="receive-again-btn">إنهاء وبدء استقبال جديد</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Send Screen -->
+    <section id="screen-send" class="screen">
+      <button class="back-btn" id="back-from-send" aria-label="رجوع">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M19 12H5M12 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </button>
+
+      <div class="screen-content">
+        <div class="screen-header">
+          <h2>إرسال</h2>
+          <p>اتصل بجهاز المستقبِل أولاً</p>
+        </div>
+
+        <!-- Connect Step -->
+        <div id="send-connect" class="send-step">
+          <div id="code-panel">
+            <div class="code-input-wrap">
+              <p class="code-input-label">أدخل الرمز المكون من 6 أرقام</p>
+              <div class="code-inputs" id="code-inputs">
+                <input class="code-char" id="ci0" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                  aria-label="الرقم الأول" />
+                <input class="code-char" id="ci1" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                  aria-label="الرقم الثاني" />
+                <input class="code-char" id="ci2" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                  aria-label="الرقم الثالث" />
+                <span class="code-input-sep">·</span>
+                <input class="code-char" id="ci3" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                  aria-label="الرقم الرابع" />
+                <input class="code-char" id="ci4" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                  aria-label="الرقم الخامس" />
+                <input class="code-char" id="ci5" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                  aria-label="الرقم السادس" />
+              </div>
+              <p id="code-error" class="code-error hidden">رمز غير صحيح أو منتهي الصلاحية</p>
+              <button class="btn-primary" id="connect-btn">اتصال</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Send Content Step -->
+        <div id="send-content" class="send-step hidden">
+          <div class="connected-badge">
+            <div class="pulse-dot green"></div>
+            <span>متصل بالمستقبِل</span>
+          </div>
+
+          <div class="content-tabs">
+            <button class="ctab-btn active" id="ctab-file" aria-label="إرسال ملف">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor"
+                  stroke-width="2" />
+                <polyline points="14 2 14 8 20 8" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+              </svg>
+              ملف
+            </button>
+            <button class="ctab-btn" id="ctab-link" aria-label="إرسال رابط أو نص">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              نص / رابط
+            </button>
+          </div>
+
+          <div id="file-panel" class="ctab-panel active">
+            <div class="drop-zone" id="drop-zone">
+              <input type="file" id="file-input" style="display:none" accept="*/*" multiple />
+              <div class="drop-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" />
+                  <polyline points="17 8 12 3 7 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                  <line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+              </div>
+              <p class="drop-text">اسحب ملفات هنا أو</p>
+              <button class="btn-outline" id="browse-btn">اختر ملفات</button>
+              <p class="drop-limit">الحد الأقصى لكل ملف: 40 ميغابايت</p>
+            </div>
+            <div id="file-preview" class="file-preview hidden">
+              <div id="file-list-container" style="display: flex; flex-direction: column; gap: 8px; width: 100%;"></div>
+              <button class="btn-outline" id="remove-file" style="margin-top: 10px; width: 100%;">الغاء التحديد</button>
+            </div>
+          </div>
+
+          <div id="link-panel" class="ctab-panel">
+            <div class="link-input-wrap">
+              <textarea id="link-input" class="link-input text-area-input" placeholder="اكتب نصاً أو الصق رابطاً هنا..."
+                aria-label="نص أو رابط" rows="3"></textarea>
+            </div>
+          </div>
+
+          <!-- Progress -->
+          <div id="upload-progress" class="upload-progress hidden">
+            <div class="progress-bar-wrap">
+              <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <span id="progress-text">0%</span>
+          </div>
+
+          <button class="btn-primary btn-send-now" id="send-now-btn">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+              <path d="M22 2L15 22 11 13 2 9l20-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
             </svg>
+            إرسال الآن
           </button>
-          <div class="app-content-inner">
-            <div id="send-connect" class="send-step-box">
-              <div class="inner-header">
-                <h2 data-i18n="send_conn_title">الاتصال بالجهاز</h2>
-                <p data-i18n="send_conn_desc">أدخل الرمز المكون من 6 أرقام</p>
-              </div>
-              <div class="otp-inputs" id="code-inputs">
-                <input class="otp-field" id="ci0" maxlength="1" inputmode="numeric">
-                <input class="otp-field" id="ci1" maxlength="1" inputmode="numeric">
-                <input class="otp-field" id="ci2" maxlength="1" inputmode="numeric">
-                <span class="otp-sep">·</span>
-                <input class="otp-field" id="ci3" maxlength="1" inputmode="numeric">
-                <input class="otp-field" id="ci4" maxlength="1" inputmode="numeric">
-                <input class="otp-field" id="ci5" maxlength="1" inputmode="numeric">
-              </div>
-              <p id="code-error" class="error-msg hidden" data-i18n="send_error_code">رمز غير صحيح</p>
-              <button class="btn-primary" id="connect-btn" data-i18n="send_conn_btn">اتصال</button>
-            </div>
+        </div>
 
-            <div id="send-content" class="send-step-box hidden">
-              <div class="conn-status">
-                <span class="status-dot green"></span>
-                <span data-i18n="send_status_connected">متصل بالمستقبِل</span>
-              </div>
-              <div class="tabs">
-                <button class="tab-trigger active" id="ctab-file" data-i18n="tab_files">ملفات</button>
-                <button class="tab-trigger" id="ctab-link" data-i18n="tab_links">روابط / نص</button>
-              </div>
-
-              <div id="file-panel" class="tab-content active">
-                <div class="drop-area" id="drop-zone">
-                  <input type="file" id="file-input" hidden multiple>
-                  <div class="drop-icon-large"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                      stroke-width="2">
-                      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-                      <polyline points="17 8 12 3 7 8" />
-                      <line x1="12" y1="3" x2="12" y2="15" />
-                    </svg></div>
-                  <p data-i18n="drop_text">اسحب الملفات هنا أو اضغط للاختيار</p>
-                  <span class="limit-text" data-i18n="limit_text">الحد الأقصى 40 ميغا لكل ملف</span>
-                </div>
-                <div id="file-preview" class="file-list-preview hidden">
-                  <div id="file-list-container"></div>
-                  <button class="btn-text" id="remove-file" data-i18n="reset_btn">إعادة التعيين</button>
-                </div>
-              </div>
-
-              <div id="link-panel" class="tab-content">
-                <textarea id="link-input" class="modern-textarea" data-i18n-ph="textarea_placeholder"
-                  placeholder="اكتب نصاً أو الصق رابطاً هنا..."></textarea>
-              </div>
-
-              <div id="upload-progress" class="upload-status hidden">
-                <div class="progress-container">
-                  <div class="progress-fill" id="progress-bar"></div>
-                </div>
-                <span id="progress-text">0%</span>
-              </div>
-
-              <button class="btn-primary" id="send-now-btn" data-i18n="send_btn">إرسال الآن</button>
-            </div>
-
-            <div id="send-done" class="send-step-box hidden">
-              <div class="success-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg></div>
-              <h3 data-i18n="send_done_title">تم الإرسال!</h3>
-              <p data-i18n="send_done_desc">استلم المستقبِل المحتوى بنجاح</p>
-              <button class="btn-primary" id="send-again-btn" data-i18n="send_again">إرسال المزيد</button>
-              <button class="btn-outline" id="end-session-btn" data-i18n="end_session">إنهاء الجلسة</button>
-            </div>
+        <!-- Send Done -->
+        <div id="send-done" class="send-step hidden">
+          <div class="done-icon success">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
           </div>
-        </section>
-      </div>
-    </section>
-
-    <!-- How it works -->
-    <section id="how-it-works" class="how-section">
-      <div class="section-header">
-        <h2 class="section-title" data-i18n="how_title">كيفية <span class="gradient-text">الاستخدام</span></h2>
-      </div>
-      <div class="steps-container">
-        <div class="step-item">
-          <div class="step-num">01</div>
-          <h4 data-i18n="step_1_title">افتح الموقع على الجهازين</h4>
-          <p data-i18n="step_1_desc">تأكد من فتح Q-Share على كل من الجهاز المرسل والمستقبل.</p>
-        </div>
-        <div class="step-item">
-          <div class="step-num">02</div>
-          <h4 data-i18n="step_2_title">انسخ الرمز</h4>
-          <p data-i18n="step_2_desc">اضغط "استقبال" على أحد الأجهزة وخذ الرمز المكون من 6 أرقام.</p>
-        </div>
-        <div class="step-item">
-          <div class="step-num">03</div>
-          <h4 data-i18n="step_3_title">ابدأ النقل</h4>
-          <p data-i18n="step_3_desc">أدخل الرمز في الجهاز الآخر، اختر ملفاتك، واضغط إرسال!</p>
+          <h3>تم الإرسال بنجاح!</h3>
+          <p class="done-sub">استلم المستخدم الآخر المحتوى</p>
+          <button class="btn-primary" id="send-again-btn">إرسال المزيد لنفس المستقبِل</button>
+          <button class="btn-outline" id="end-session-btn" style="margin-top: 10px; width: 100%;">إنهاء الجلسة</button>
         </div>
       </div>
     </section>
-  </main>
 
-  <footer class="footer">
-    <div class="footer-container">
-      <div class="footer-brand">
-        <span class="nav-logo-text">Q-Share</span>
-        <p data-i18n="footer_desc">نقل فوري وبسيط للملفات والروابط.</p>
-      </div>
-      <div class="footer-links">
-        <a href="https://github.com" target="_blank">GitHub</a>
-        <a href="#" data-i18n="footer_privacy">الخصوصية</a>
-        <a href="#" data-i18n="footer_contact">تواصل معنا</a>
-      </div>
-      <div class="footer-copy" data-i18n="footer_copy">© 2024 Q-Share. جميع الحقوق محفوظة.</div>
-    </div>
-  </footer>
-
-  <!-- Global Toast -->
-  <div id="toast" class="toast"></div>
+    <!-- Global Toast -->
+    <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+  </div>
 
   <script type="module" src="/src/main.js"></script>
 </body>

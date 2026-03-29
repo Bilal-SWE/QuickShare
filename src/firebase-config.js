@@ -1,4 +1,4 @@
-// Q-Share – Firebase Configuration
+// DropIt – Firebase Configuration
 // Replace with your own Firebase project credentials
 
 export const firebaseConfig = {
