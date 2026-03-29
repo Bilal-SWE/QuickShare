@@ -98,9 +98,11 @@ async function disconnectSession() {
 // ──────────────────────────────────────────────
 // RECEIVE FLOW
 // ──────────────────────────────────────────────
-async function startReceiveSession(receiverName) {
-  $('receive-name-step').classList.add('hidden');
+async function startReceiveSession() {
   $('receive-loading').classList.remove('hidden');
+  $('receive-ready').classList.add('hidden');
+  $('receive-done').classList.add('hidden');
+  $('receive-header').classList.remove('hidden');
 
   if (!isConfigured || !supabase) { showToast('Supabase غير معد'); return; }
 
@@ -110,8 +112,7 @@ async function startReceiveSession(receiverName) {
     code.split('').forEach((ch, i) => { if ($(`d${i}`)) $(`d${i}`).textContent = ch; });
 
     const { error: insErr } = await supabase.from('sessions').insert({
-      code, status: 'waiting', expires_at: new Date(Date.now() + SESSION_TTL * 1000).toISOString(),
-      receiver_name: receiverName
+      code, status: 'waiting', expires_at: new Date(Date.now() + SESSION_TTL * 1000).toISOString()
     });
     if (insErr) throw insErr;
 
@@ -127,7 +128,6 @@ async function startReceiveSession(receiverName) {
     }, (payload) => {
       const data = payload.new;
       if (data.status === 'connected') {
-        $('sender-display-name').textContent = data.sender_name || 'مرسل مجهول';
         $('connected-sender-info').classList.remove('hidden');
         showToast('متصل الآن');
       }
@@ -185,8 +185,7 @@ async function connectToSession(code) {
   const { data, error } = await supabase.from('sessions').select('*').eq('code', code).single();
   if (error || !data) { showToast('الرمز غير صحيح'); resetConnectBtn(); return false; }
 
-  const senderName = prompt('أدخل اسمك للجلسة:') || 'مرسل';
-  await supabase.from('sessions').update({ status: 'connected', sender_name: senderName }).eq('code', code);
+  await supabase.from('sessions').update({ status: 'connected' }).eq('code', code);
   connectedCode = code;
   resetConnectBtn();
   return true;
@@ -229,15 +228,10 @@ function showSendDone() {
 // Event Listeners
 // ──────────────────────────────────────────────
 $('btn-send').onclick = () => { navigateTo('send'); resetSendScreen(); };
-$('btn-receive').onclick = () => { navigateTo('receive'); $('receive-name-step').classList.remove('hidden'); };
+$('btn-receive').onclick = () => { navigateTo('receive'); startReceiveSession(); };
 $('back-from-send').onclick = () => navigateTo('home');
 $('back-from-receive').onclick = () => disconnectSession();
 $('disconnect-btn').onclick = () => disconnectSession();
-$('start-session-btn').onclick = () => {
-  const name = $('receiver-name-input').value.trim();
-  if (!name) return showToast('أدخل اسمك');
-  startReceiveSession(name);
-};
 
 $('connect-btn').onclick = async () => {
   const code = [0, 1, 2, 3, 4].map(i => $(`ci${i}`).value).join('');
@@ -273,8 +267,8 @@ $('file-input').onchange = (e) => {
 $('remove-file').onclick = () => { selectedFiles = []; $('file-preview').classList.add('hidden'); $('drop-zone').classList.remove('hidden'); };
 $('send-now-btn').onclick = sendContent;
 $('send-again-btn').onclick = () => { $('send-done').classList.add('hidden'); $('send-content').classList.remove('hidden'); };
-$('end-session-btn').onclick = () => navigateTo('home');
-$('receive-again-btn').onclick = () => navigateTo('home');
+$('end-session-btn').onclick = () => { resetSendScreen(); navigateTo('home'); };
+$('receive-again-btn').onclick = () => disconnectSession();
 
 function resetSendScreen() {
   connectedCode = null; selectedFiles = [];
