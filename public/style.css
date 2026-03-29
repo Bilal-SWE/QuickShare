@@ -329,25 +329,29 @@ header {
 
 /* Back Button */
 .back-btn {
-  position: fixed;
-  top: 1.5rem;
-  right: 1.5rem;
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  background: #fff;
-  border: 2px solid var(--c-border);
-  color: var(--c-text);
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--c-primary-light);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: var(--c-red);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all var(--transition);
+  z-index: 10;
+  font-size: 1.1rem;
+  font-weight: 700;
 }
 
 .back-btn:hover {
-  border-color: var(--c-primary);
-  color: var(--c-primary);
+  background: var(--c-red);
+  color: #fff;
+  border-color: var(--c-red);
 }
 
 /* === Inputs === */
