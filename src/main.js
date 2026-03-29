@@ -27,7 +27,7 @@ let currentSessionCode = null;
 let realtimeChannel = null;
 let qrScanner = null;
 let timerInterval = null;
-let selectedFile = null;
+let selectedFiles = [];
 let connectedCode = null;
 const SESSION_TTL = 10 * 60; // 10 minutes in seconds
 
@@ -206,33 +206,30 @@ async function startReceiveSession() {
 
         // ── File/Link transferred ──
         if (data.status === 'transferred') {
-          stopTimer();
-          supabase.removeChannel(realtimeChannel);
-          realtimeChannel = null;
-
           $('receive-ready').classList.add('hidden');
           $('receive-done').classList.remove('hidden');
 
           const content = $('received-content');
+          let htmlItem = '';
           if (data.type === 'link') {
             const isUrl = data.url.startsWith('http://') || data.url.startsWith('https://');
             const displayContent = isUrl
               ? `<a href="${data.url}" target="_blank" rel="noopener" style="word-break: break-all;">${data.url}</a>`
               : `<div style="white-space: pre-wrap; word-break: break-word; text-align: right; width: 100%;">${data.url}</div>`;
 
-            content.innerHTML = `
-              <div class="received-link-wrap" style="align-items: flex-start;">
-                <svg style="flex-shrink:0;width:20px;height:20px;color:var(--c-teal);margin-top:2px;" viewBox="0 0 24 24" fill="none">
+            htmlItem = `
+              <div class="received-link-wrap" style="align-items: flex-start; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                <svg style="flex-shrink:0;width:20px;height:20px;color:var(--c-teal);margin-top:2px; margin-left: 8px;" viewBox="0 0 24 24" fill="none">
                   <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
                 ${displayContent}
               </div>`;
           } else if (data.type === 'file') {
-            content.innerHTML = `
-              <div class="received-file-wrap">
-                <p class="received-file-name">📁 ${data.file_name}</p>
+            htmlItem = `
+              <div class="received-file-wrap" style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                <p class="received-file-name" style="margin-bottom: 8px;">📁 ${data.file_name}</p>
                 <a class="btn-download" href="${data.download_url}" target="_blank" download="${data.file_name}">
-                  <svg viewBox="0 0 24 24" fill="none" style="width:18px;height:18px">
+                  <svg viewBox="0 0 24 24" fill="none" style="width:18px;height:18px; margin-left: 5px;">
                     <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     <polyline points="7 10 12 15 17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     <line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -241,9 +238,7 @@ async function startReceiveSession() {
                 </a>
               </div>`;
           }
-
-          // Clean up after 2 min
-          setTimeout(() => supabase.from('sessions').delete().eq('code', code), 120000);
+          content.insertAdjacentHTML('beforeend', htmlItem);
         }
       })
       .subscribe();
@@ -338,14 +333,42 @@ async function sendContent() {
   if (!isConfigured || !supabase) { showToast('Supabase غير مُعدَّل'); return; }
 
   if (isFile) {
-    if (!selectedFile) { showToast('يرجى اختيار ملف'); return; }
-    await uploadFile(selectedFile);
+    if (selectedFiles.length === 0) { showToast('يرجى اختيار ملف'); return; }
+
+    $('upload-progress').classList.remove('hidden');
+    $('send-now-btn').disabled = true;
+
+    let fakeProgress = 0;
+    const fakeTimer = setInterval(() => {
+      if (fakeProgress < 90) {
+        fakeProgress += Math.random() * 8;
+        if (fakeProgress > 90) fakeProgress = 90;
+        $('progress-bar').style.width = `${fakeProgress.toFixed(0)}%`;
+        $('progress-text').textContent = `${fakeProgress.toFixed(0)}%`;
+      }
+    }, 300);
+
+    try {
+      for (const file of selectedFiles) {
+        await uploadSingleFile(file);
+      }
+      clearInterval(fakeTimer);
+      $('progress-bar').style.width = '100%';
+      $('progress-text').textContent = '100%';
+      setTimeout(showSendDone, 400);
+    } catch (err) {
+      clearInterval(fakeTimer);
+      console.error('Upload error:', err);
+      showToast(`خطأ في الرفع: ${err.message}`);
+      $('upload-progress').classList.add('hidden');
+      $('progress-bar').style.width = '0%';
+      $('send-now-btn').disabled = false;
+    }
+
   } else {
     const rawUrl = $('link-input').value.trim();
     if (!rawUrl) { showToast('يرجى إدخال نص أو رابط'); return; }
 
-    // Sanitize input to prevent basic HTML/Script injection which could be 
-    // interpreted as SQL injection vectors in some contexts, and protects receiver
     const sanitizedUrl = rawUrl
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
@@ -357,74 +380,35 @@ async function sendContent() {
   }
 }
 
-async function uploadFile(file) {
-  const MAX = 40 * 1024 * 1024;
-  if (file.size > MAX) { showToast('حجم الملف يتجاوز 40 ميغابايت'); return; }
+async function uploadSingleFile(file) {
+  const safeFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+  const filePath = `${connectedCode}/${Date.now()}_${safeFileName}`;
 
-  $('upload-progress').classList.remove('hidden');
-  $('send-now-btn').disabled = true;
+  const { error: uploadError } = await supabase.storage
+    .from('transfers')
+    .upload(filePath, file, {
+      cacheControl: '3600',
+      upsert: true,
+      contentType: file.type || 'application/octet-stream',
+    });
 
-  // Animate progress bar while uploading
-  let fakeProgress = 0;
-  const fakeTimer = setInterval(() => {
-    // Slowly fill to 90% while waiting for real upload
-    if (fakeProgress < 90) {
-      fakeProgress += Math.random() * 8;
-      if (fakeProgress > 90) fakeProgress = 90;
-      $('progress-bar').style.width = `${fakeProgress.toFixed(0)}%`;
-      $('progress-text').textContent = `${fakeProgress.toFixed(0)}%`;
-    }
-  }, 300);
+  if (uploadError) throw uploadError;
 
-  try {
-    const safeFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const filePath = `${connectedCode}/${Date.now()}_${safeFileName}`;
+  const { data: urlData } = supabase.storage
+    .from('transfers')
+    .getPublicUrl(filePath);
 
-    // Upload via Supabase SDK (handles new key format correctly)
-    const { error: uploadError } = await supabase.storage
-      .from('transfers')
-      .upload(filePath, file, {
-        cacheControl: '3600',
-        upsert: true,
-        contentType: file.type || 'application/octet-stream',
-      });
+  const downloadUrl = urlData.publicUrl;
 
-    clearInterval(fakeTimer);
+  const { error: updateError } = await supabase.from('sessions').update({
+    status: 'transferred',
+    type: 'file',
+    file_name: file.name,
+    file_size: file.size,
+    download_url: downloadUrl,
+  }).eq('code', connectedCode);
 
-    if (uploadError) throw uploadError;
-
-    // Complete progress bar
-    $('progress-bar').style.width = '100%';
-    $('progress-text').textContent = '100%';
-
-    // Get permanent public URL
-    const { data: urlData } = supabase.storage
-      .from('transfers')
-      .getPublicUrl(filePath);
-
-    const downloadUrl = urlData.publicUrl;
-
-    // Update session → triggers receiver Realtime
-    const { error: updateError } = await supabase.from('sessions').update({
-      status: 'transferred',
-      type: 'file',
-      file_name: file.name,
-      file_size: file.size,
-      download_url: downloadUrl,
-    }).eq('code', connectedCode);
-
-    if (updateError) throw updateError;
-
-    setTimeout(showSendDone, 400);
-
-  } catch (err) {
-    clearInterval(fakeTimer);
-    console.error('Upload error:', err);
-    showToast(`خطأ في الرفع: ${err.message}`);
-    $('upload-progress').classList.add('hidden');
-    $('progress-bar').style.width = '0%';
-    $('send-now-btn').disabled = false;
-  }
+  if (updateError) throw updateError;
 }
 
 async function sendLink(url) {
@@ -467,12 +451,13 @@ function clearCodeInputs() {
 // ──────────────────────────────────────────────
 function resetSendScreen() {
   connectedCode = null;
-  selectedFile = null;
+  selectedFiles = [];
   $('send-connect').classList.remove('hidden');
   $('send-content').classList.add('hidden');
   $('send-done').classList.add('hidden');
   $('upload-progress').classList.add('hidden');
   $('progress-bar').style.width = '0%';
+  $('file-list-container').innerHTML = '';
   $('file-preview').classList.add('hidden');
   $('drop-zone').classList.remove('hidden');
   $('link-input').value = '';
@@ -487,6 +472,27 @@ function resetSendScreen() {
 // ──────────────────────────────────────────────
 // Event Listeners
 // ──────────────────────────────────────────────
+
+// Helper to scroll to app
+function scrollToApp() {
+  document.getElementById('app-container').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Nav and Hero Actions
+$('nav-btn-start')?.addEventListener('click', scrollToApp);
+$('hero-send')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  navigateTo('send');
+  scrollToApp();
+  setTimeout(() => $('ci0').focus(), 400);
+});
+$('hero-receive')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  navigateTo('receive');
+  scrollToApp();
+  startReceiveSession();
+});
+
 $('btn-receive').addEventListener('click', () => {
   navigateTo('receive');
   startReceiveSession();
@@ -520,8 +526,27 @@ $('copy-code-btn').addEventListener('click', () => {
   }
 });
 
-$('receive-again-btn').addEventListener('click', () => startReceiveSession());
+$('receive-again-btn').addEventListener('click', () => {
+  $('received-content').innerHTML = '';
+  startReceiveSession();
+});
+
 $('send-again-btn').addEventListener('click', () => {
+  selectedFiles = [];
+  $('file-input').value = '';
+  $('file-list-container').innerHTML = '';
+  $('file-preview').classList.add('hidden');
+  $('drop-zone').classList.remove('hidden');
+  $('link-input').value = '';
+  $('upload-progress').classList.add('hidden');
+  $('progress-bar').style.width = '0%';
+  $('send-now-btn').disabled = false;
+
+  $('send-done').classList.add('hidden');
+  $('send-content').classList.remove('hidden');
+});
+
+$('end-session-btn').addEventListener('click', () => {
   resetSendScreen();
   setTimeout(() => $('ci0').focus(), 100);
 });
@@ -529,6 +554,7 @@ $('send-again-btn').addEventListener('click', () => {
 // Code char inputs
 const charInputs = [0, 1, 2, 3, 4, 5].map(i => $(`ci${i}`));
 charInputs.forEach((input, idx) => {
+  if (!input) return;
   input.addEventListener('input', () => {
     const v = input.value.replace(/\D/g, '');
     input.value = v.slice(-1);
@@ -566,32 +592,62 @@ $('ctab-link').addEventListener('click', () => {
 });
 
 // File drop zone
-$('browse-btn').addEventListener('click', () => $('file-input').click());
 const dropZone = $('drop-zone');
 dropZone.addEventListener('click', () => $('file-input').click());
 dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
 dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
 dropZone.addEventListener('drop', (e) => {
   e.preventDefault(); dropZone.classList.remove('drag-over');
-  const file = e.dataTransfer.files[0];
-  if (file) handleFileSelect(file);
+  if (e.dataTransfer.files.length > 0) handleFileSelect(e.dataTransfer.files);
 });
 $('file-input').addEventListener('change', (e) => {
-  if (e.target.files[0]) handleFileSelect(e.target.files[0]);
+  if (e.target.files.length > 0) handleFileSelect(e.target.files);
 });
 
-function handleFileSelect(file) {
-  if (file.size > 40 * 1024 * 1024) { showToast('الملف يتجاوز الحد الأقصى (40 ميغابايت)'); return; }
-  selectedFile = file;
-  $('file-name').textContent = file.name;
-  $('file-size').textContent = formatBytes(file.size);
-  $('file-preview').classList.remove('hidden');
-  dropZone.classList.add('hidden');
+function handleFileSelect(files) {
+  const maxBytes = 40 * 1024 * 1024;
+  Array.from(files).forEach(file => {
+    if (file.size > maxBytes) {
+      showToast(`الملف ${file.name} يتجاوز الحد الأقصى (40 ميغابايت)`);
+    } else {
+      selectedFiles.push(file);
+    }
+  });
+
+  if (selectedFiles.length > 0) {
+    renderFileList();
+    $('file-preview').classList.remove('hidden');
+    dropZone.classList.add('hidden');
+  }
+}
+
+function renderFileList() {
+  const container = $('file-list-container');
+  container.innerHTML = '';
+  selectedFiles.forEach(file => {
+    container.innerHTML += `
+            <div class="file-info" style="margin-bottom: 5px; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
+                <div class="file-icon-wrap" style="width: 24px; height: 24px; color: var(--c-primary);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke-width="2" />
+                      <polyline points="14 2 14 8 20 8" stroke-width="2" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <div style="flex: 1; overflow: hidden; text-align: right;">
+                  <p class="file-name-text" style="font-size: 0.95rem; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${file.name}</p>
+                  <p class="file-size-text" style="font-size: 0.8rem; margin: 0; color: rgba(255,255,255,0.6);">${formatBytes(file.size)}</p>
+                </div>
+            </div>
+        `;
+  });
 }
 
 $('remove-file').addEventListener('click', () => {
-  selectedFile = null; $('file-input').value = '';
-  $('file-preview').classList.add('hidden'); dropZone.classList.remove('hidden');
+  selectedFiles = [];
+  $('file-input').value = '';
+  $('file-list-container').innerHTML = '';
+  $('file-preview').classList.add('hidden');
+  dropZone.classList.remove('hidden');
 });
 
 $('send-now-btn').addEventListener('click', sendContent);
@@ -601,6 +657,7 @@ const autoCode = urlParams.get('code');
 if (autoCode && /^\d{6}$/.test(autoCode)) {
   setTimeout(async () => {
     navigateTo('send');
+    scrollToApp();
     autoCode.split('').forEach((ch, i) => { if (charInputs[i]) charInputs[i].value = ch; });
     const ok = await connectToSession(autoCode);
     if (ok) {
@@ -612,3 +669,4 @@ if (autoCode && /^\d{6}$/.test(autoCode)) {
     window.history.replaceState({}, '', window.location.pathname);
   }, 500);
 }
+
