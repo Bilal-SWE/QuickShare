@@ -637,3 +637,36 @@ header {
     transform: rotate(360deg);
   }
 }
+
+/* Statistics at bottom */
+.stats-container {
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+  right: 0;
+  padding: 1.5rem;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stat-value {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--c-primary);
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--c-text-muted);
+}

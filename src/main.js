@@ -327,10 +327,10 @@ async function loadStats() {
     const ns = window.location.hostname.replace(/\./g, '_') || 'local_qshare';
     const res = await fetch(`https://api.counterapi.dev/v1/${ns}/visits/up`);
     const data = await res.json();
-    if (data.count) $('visitor-count').textContent = data.count.toLocaleString();
+    if (data.count) $('visitor-count-bottom').textContent = data.count.toLocaleString();
   } catch (e) {
     console.warn('Visitor count failed:', e);
-    $('visitor-count').textContent = '---';
+    $('visitor-count-bottom').textContent = '---';
   }
 }
 
