@@ -18,9 +18,7 @@
           <div class="logo-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
               stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="17 8 12 3 7 8"></polyline>
-              <line x1="12" y1="3" x2="12" y2="15"></line>
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
             </svg>
           </div>
           <h1 class="logo-text">Q-share</h1>
@@ -39,15 +37,25 @@
 
           <div class="home-cards">
             <button id="btn-send" class="card" aria-label="إرسال">
-              <div class="card-icon">📤</div>
+              <div class="card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </div>
               <span class="card-title">إرسال</span>
-              <span class="card-desc">مشاركة ملف أو نص</span>
+              <span class="card-desc">مشاركة سريعة</span>
             </button>
 
             <button id="btn-receive" class="card" aria-label="استقبال">
-              <div class="card-icon">📥</div>
+              <div class="card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+              </div>
               <span class="card-title">استقبال</span>
-              <span class="card-desc">الحصول على الملفات</span>
+              <span class="card-desc">استلام فوري</span>
             </button>
           </div>
         </section>
@@ -144,7 +152,12 @@
               <div id="file-panel">
                 <div class="drop-zone" id="drop-zone">
                   <input type="file" id="file-input" hidden multiple>
-                  <div class="drop-icon">📁</div>
+                  <div class="drop-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+                    </svg>
+                  </div>
                   <p>اسحب الملفات هنا أو اضغط للاختيار</p>
                   <button class="btn-outline" id="browse-btn" style="width: auto; padding: 0.5rem 1rem;">اختر</button>
                 </div>
