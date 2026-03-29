@@ -218,21 +218,21 @@ async function startReceiveSession() {
               : `<div style="white-space: pre-wrap; word-break: break-word; text-align: right; width: 100%;">${data.url}</div>`;
 
             htmlItem = `
-              <div class="received-link-wrap" style="align-items: flex-start; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px;">
-                <svg style="flex-shrink:0;width:20px;height:20px;color:var(--c-teal);margin-top:2px; margin-left: 8px;" viewBox="0 0 24 24" fill="none">
-                  <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <div class="received-link-wrap" style="align-items: flex-start; padding: 1.2rem; background: #f8fafc; border: 1px solid var(--c-border); border-radius: 12px; margin-bottom: 1rem;">
+                <svg style="flex-shrink:0;width:20px;height:20px;color:var(--c-teal);margin-top:2px; margin-left: 8px;" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
                 ${displayContent}
               </div>`;
           } else if (data.type === 'file') {
             htmlItem = `
-              <div class="received-file-wrap" style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px;">
-                <p class="received-file-name" style="margin-bottom: 8px;">📁 ${data.file_name}</p>
-                <a class="btn-download" href="${data.download_url}" target="_blank" download="${data.file_name}">
-                  <svg viewBox="0 0 24 24" fill="none" style="width:18px;height:18px; margin-left: 5px;">
-                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <polyline points="7 10 12 15 17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <div class="received-file-wrap" style="padding: 1.2rem; background: #f8fafc; border: 1px solid var(--c-border); border-radius: 12px; margin-bottom: 1rem; text-align: start;">
+                <p class="received-file-name" style="margin-bottom: 1rem; font-weight: 600; color: var(--c-text);">📁 ${data.file_name}</p>
+                <a class="btn-download" href="${data.download_url}" target="_blank" download="${data.file_name}" style="display: inline-flex; align-items: center; background: var(--c-primary); color: white; padding: 0.6rem 1.2rem; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 0.9rem;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:18px;height:18px; margin-left: 6px;">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <polyline points="7 10 12 15 17 10" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <line x1="12" y1="3" x2="12" y2="15" stroke-width="2" stroke-linecap="round"/>
                   </svg>
                   تحميل الملف
                 </a>
@@ -800,16 +800,16 @@ function renderFileList() {
   container.innerHTML = '';
   selectedFiles.forEach(file => {
     container.innerHTML += `
-            <div class="file-info" style="margin-bottom: 5px; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 8px; display: flex; align-items: center; gap: 10px;">
-                <div class="file-icon-wrap" style="width: 24px; height: 24px; color: var(--c-primary);">
+            <div class="file-info" style="margin-bottom: 10px; background: #f1f5f9; padding: 12px 16px; border-radius: 14px; display: flex; align-items: center; gap: 12px; border: 1px solid var(--c-border);">
+                <div class="file-icon-wrap" style="width: 24px; height: 24px; color: var(--c-primary); flex-shrink: 0;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                       <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke-width="2" />
                       <polyline points="14 2 14 8 20 8" stroke-width="2" stroke-linejoin="round" />
                     </svg>
                 </div>
                 <div style="flex: 1; overflow: hidden; text-align: start;">
-                  <p class="file-name-text" style="font-size: 0.95rem; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${file.name}</p>
-                  <p class="file-size-text" style="font-size: 0.8rem; margin: 0; color: rgba(255,255,255,0.6);">${formatBytes(file.size)}</p>
+                  <p class="file-name-text" style="font-size: 0.95rem; margin: 0; font-weight: 600; color: var(--c-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${file.name}</p>
+                  <p class="file-size-text" style="font-size: 0.8rem; margin: 0; color: var(--c-text-muted);">${formatBytes(file.size)}</p>
                 </div>
             </div>
         `;
