@@ -1,4 +1,4 @@
-// DropIt — Supabase Configuration
+// Q-Share — Supabase Configuration
 
 export const SUPABASE_URL = 'https://vgpkkyrwrmitrdipqgjf.supabase.co'
 
