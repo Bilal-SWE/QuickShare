@@ -612,8 +612,7 @@ $('copy-code-btn').addEventListener('click', () => {
 
 $('receive-again-btn').addEventListener('click', () => {
   $('received-content').innerHTML = '';
-  const currentName = $('receiver-name-input').value.trim();
-  startReceiveSession(currentName);
+  disconnectSession();
 });
 
 $('send-again-btn').addEventListener('click', () => {
@@ -654,7 +653,7 @@ charInputs.forEach((input, idx) => {
 
 $('end-session-btn').addEventListener('click', () => {
   resetSendScreen();
-  setTimeout(() => $('ci0').focus(), 100);
+  navigateTo('home');
 });
 
 // Sidebar logic
