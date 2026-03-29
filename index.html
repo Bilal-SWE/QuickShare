@@ -11,28 +11,41 @@
 </head>
 
 <body>
+  <div class="bg-decor">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+  </div>
+
   <div class="app-wrapper">
     <header>
-      <div class="nav">
-        <div class="logo-wrap">
-          <div class="logo-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-            </svg>
+      <div class="container">
+        <div class="nav">
+          <div class="logo-wrap">
+            <div class="logo-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+              </svg>
+            </div>
+            <h1 class="logo-text">Q-share</h1>
           </div>
-          <h1 class="logo-text">Q-share</h1>
+          <ul class="nav-links">
+            <li><a href="#features">المميزات</a></li>
+            <li><a href="#how-it-works">كيف يعمل؟</a></li>
+            <li><a href="https://github.com/Bilal-SWE/QuickShare" target="_blank">المتصفح</a></li>
+          </ul>
         </div>
       </div>
     </header>
 
-    <main class="container">
-      <div id="app">
-        <!-- Home Screen -->
-        <section id="screen-home" class="screen active">
+    <main>
+      <!-- Hero Section -->
+      <section class="hero" id="screen-home">
+        <div class="container">
           <div class="main-hero">
-            <h1>أهلاً بك في Q-share</h1>
-            <p>انقل ملفاتك وروابطك بلمح البصر</p>
+            <span class="hero-tag">أسرع وسيلة لمشاركة الملفات</span>
+            <h1>شارك ملفاتك وروابطك <br> <span style="color: var(--c-primary)">في ثوانٍ معدودة</span></h1>
+            <p>بدون تسجيل، بدون إعلانات، وبخصوصية تامة. انقل ملفاتك بين الأجهزة بسهولة عبر المتصفح فقط.</p>
           </div>
 
           <div class="home-cards">
@@ -58,143 +71,177 @@
               <span class="card-desc">استلام فوري</span>
             </button>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <!-- Receive Screen -->
-        <section id="screen-receive" class="screen">
-          <div class="screen-content">
-            <button class="back-btn" id="back-from-receive" aria-label="رجوع">✕</button>
-            <div id="receive-header" class="screen-header">
-              <h2>جاهز للاستقبال</h2>
-              <p>شارك الرمز مع الطرف الآخر</p>
+      <!-- Features Section -->
+      <section class="features" id="features">
+        <div class="container">
+          <div class="section-title">
+            <h2>لماذا Q-share؟</h2>
+            <p>حلول بسيطة لمشاكل نقل الملفات اليومية</p>
+          </div>
+          <div class="features-grid">
+            <div class="feature-card">
+              <div class="f-icon">🚀</div>
+              <h3 class="f-title">سرعة فائقة</h3>
+              <p>نقل مباشر بين الأجهزة دون الحاجة لرفع الملفات إلى خوادم وسيطة بطيئة.</p>
             </div>
-
-            <!-- Loading -->
-            <div id="receive-loading" class="loading-state hidden">
-              <div class="spinner"></div>
-              <span>جاري التحضير...</span>
+            <div class="feature-card">
+              <div class="f-icon">🔒</div>
+              <h3 class="f-title">خصوصية تامة</h3>
+              <p>يتم حذف الرموز والملفات تلقائياً فور انتهاء الجلسة. خصوصيتك هي أولويتنا.</p>
             </div>
-
-            <!-- Ready -->
-            <div id="receive-ready" class="hidden">
-              <div id="connected-sender-info" class="connected-info hidden">
-                <span class="connected-user-icon">👤</span>
-                <span>متصل بجهاز آخر</span>
-              </div>
-
-              <div class="qr-container">
-                <canvas id="qr-canvas"></canvas>
-              </div>
-
-              <div class="code-display" id="display-code" style="margin: 1.5rem 0;">
-                <span class="code-digit" id="d0">-</span>
-                <span class="code-digit" id="d1">-</span>
-                <span class="code-digit" id="d2">-</span>
-                <span class="code-digit" id="d3">-</span>
-                <span class="code-digit" id="d4">-</span>
-              </div>
-
-              <div class="timer-section">
-                <div class="timer-wrap" id="timer-text">10:00</div>
-                <p class="session-info-text">تنتهي الجلسة بعد: <span id="timer-display-text">10 دقائق</span></p>
-              </div>
-
-              <div id="renew-timer-panel" class="hidden"
-                style="text-align: center; color: var(--c-red); margin-top: 1rem;">
-                <p>⚠️ الجلسة ستنتهي!</p>
-                <button class="btn-primary" id="renew-time-btn" style="margin: 0.5rem 0;">تجديد</button>
-              </div>
-
-              <button class="btn-outline" id="disconnect-btn" style="margin-top: 1.5rem; color: var(--c-red);">إلغاء
-                الاتصال</button>
-            </div>
-
-            <!-- Done -->
-            <div id="receive-done" class="receive-done hidden">
-              <div class="done-icon">✓</div>
-              <h3>تم الاستلام!</h3>
-              <div id="received-content" style="width: 100%;"></div>
-              <button class="btn-primary" id="receive-again-btn">رجوع للرئيسية</button>
+            <div class="feature-card">
+              <div class="f-icon">📱</div>
+              <h3 class="f-title">عبر المنصات</h3>
+              <p>يعمل على الكمبيوتر، الأندرويد، والآيفون مباشرة من المتصفح دون تطبيقات.</p>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <!-- Send Screen -->
-        <section id="screen-send" class="screen">
-          <div class="screen-content">
-            <button class="back-btn" id="back-from-send" aria-label="رجوع">✕</button>
-            <div id="send-header" class="screen-header">
-              <h2>إرسال محتوى</h2>
-              <p>أدخل رمز المستقبِل للمتابعة</p>
+      <!-- How it works -->
+      <section class="features" id="how-it-works" style="background: var(--c-bg);">
+        <div class="container">
+          <div class="section-title">
+            <h2>كيف يعمل؟</h2>
+            <p>ثلاث خطوات بسيطة فقط</p>
+          </div>
+          <div class="features-grid">
+            <div class="feature-card" style="text-align: center;">
+              <div class="f-icon">1</div>
+              <h3 class="f-title">ابدأ جلسة</h3>
+              <p>افتح الموقع واضغط على استقبال للحصول على رمز مؤقت.</p>
             </div>
-
-            <!-- Step 1: Connect -->
-            <div id="send-connect">
-              <div class="code-display" id="code-inputs" style="margin-bottom: 1.5rem;">
-                <input class="text-input" id="ci0" maxlength="1" inputmode="numeric">
-                <input class="text-input" id="ci1" maxlength="1" inputmode="numeric">
-                <input class="text-input" id="ci2" maxlength="1" inputmode="numeric">
-                <input class="text-input" id="ci3" maxlength="1" inputmode="numeric">
-                <input class="text-input" id="ci4" maxlength="1" inputmode="numeric">
-              </div>
-              <p id="code-error" class="hidden" style="color: var(--c-red); text-align: center; margin-bottom: 1rem;">
-                الرمز غير صحيح</p>
-              <button class="btn-primary" id="connect-btn">اتصال بالجهاز</button>
+            <div class="feature-card" style="text-align: center;">
+              <div class="f-icon">2</div>
+              <h3 class="f-title">اربط الأجهزة</h3>
+              <p>أدخل الرمز في الجهاز الآخر لبدء الاتصال الآمن.</p>
             </div>
-
-            <!-- Step 2: Content -->
-            <div id="send-content" class="hidden">
-              <div class="content-tabs">
-                <button class="ctab-btn active" id="ctab-file">ملف</button>
-                <button class="ctab-btn" id="ctab-link">نص / رابط</button>
-              </div>
-
-              <div id="file-panel">
-                <div class="drop-zone" id="drop-zone">
-                  <input type="file" id="file-input" hidden multiple>
-                  <div class="drop-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                      stroke-linejoin="round">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
-                    </svg>
-                  </div>
-                  <p>اسحب الملفات هنا أو اضغط للاختيار</p>
-                  <button class="btn-outline" id="browse-btn" style="width: auto; padding: 0.5rem 1rem;">اختر</button>
-                </div>
-                <div id="file-preview" class="hidden" style="margin-top: 1rem;">
-                  <div id="file-list-container"></div>
-                  <button class="btn-outline" id="remove-file" style="margin-top: 0.5rem; color: var(--c-red);">إلغاء
-                    الكل</button>
-                </div>
-              </div>
-
-              <div id="link-panel" class="hidden">
-                <textarea id="link-input" class="link-input" rows="4"
-                  placeholder="ألصق الرابط أو النص هنا..."></textarea>
-              </div>
-
-              <div id="upload-progress" class="hidden" style="margin-top: 1rem;">
-                <div class="progress-bar-wrap">
-                  <div class="progress-bar" id="progress-bar"></div>
-                </div>
-                <p id="progress-text" style="text-align: center; font-size: 0.8rem; margin-top: 4px;">0%</p>
-              </div>
-
-              <button class="btn-primary" id="send-now-btn" style="margin-top: 1.5rem;">إرسال الآن</button>
-            </div>
-
-            <!-- Step 3: Done -->
-            <div id="send-done" class="send-done-content hidden">
-              <div class="done-icon">✓</div>
-              <h3>تم الإرسال!</h3>
-              <p>تم استلام المحتوى بنجاح</p>
-              <button class="btn-primary" id="send-again-btn">إرسال المزيد</button>
-              <button class="btn-outline" id="end-session-btn" style="margin-top: 0.5rem;">إنهاء الجلسة</button>
+            <div class="feature-card" style="text-align: center;">
+              <div class="f-icon">3</div>
+              <h3 class="f-title">ارسل واستلم</h3>
+              <p>شارك الملفات أو الروابط وستصل فوراً للطرف الآخر.</p>
             </div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </main>
+
+    <footer>
+      <div class="container">
+        <p>© 2026 Q-share. صنع بكل فخر لتسهيل حياتكم الرقمية.</p>
+      </div>
+    </footer>
+
+    <!-- App Modals (Full screen screens) -->
+    <div id="app">
+      <!-- Receive Screen -->
+      <section id="screen-receive" class="screen">
+        <div class="screen-content">
+          <button class="back-btn" id="back-from-receive" aria-label="رجوع">✕</button>
+          <div id="receive-header" class="screen-header">
+            <h2>جاهز للاستقبال</h2>
+            <p>شارك الرمز مع الطرف الآخر</p>
+          </div>
+          <div id="receive-loading" class="loading-state hidden">
+            <div class="spinner"></div>
+            <span>جاري التحضير...</span>
+          </div>
+          <div id="receive-ready" class="hidden">
+            <div id="connected-sender-info" class="connected-info hidden">
+              <span class="connected-user-icon">👤</span>
+              <span>متصل بجهاز آخر</span>
+            </div>
+            <div class="qr-container"><canvas id="qr-canvas"></canvas></div>
+            <div class="code-display" id="display-code" style="margin: 1.5rem 0;">
+              <span class="code-digit" id="d0">-</span>
+              <span class="code-digit" id="d1">-</span>
+              <span class="code-digit" id="d2">-</span>
+              <span class="code-digit" id="d3">-</span>
+              <span class="code-digit" id="d4">-</span>
+            </div>
+            <div class="timer-section">
+              <div class="timer-wrap" id="timer-text">10:00</div>
+              <p class="session-info-text">تنتهي الجلسة بعد: <span id="timer-display-text">10 دقائق</span></p>
+            </div>
+            <div id="renew-timer-panel" class="hidden"
+              style="text-align: center; color: var(--c-red); margin-top: 1rem;">
+              <p>⚠️ الجلسة ستنتهي!</p>
+              <button class="btn-primary" id="renew-time-btn" style="margin: 0.5rem 0;">تجديد</button>
+            </div>
+            <button class="btn-outline" id="disconnect-btn" style="margin-top: 1.5rem; color: var(--c-red);">إلغاء
+              الاتصال</button>
+          </div>
+          <div id="receive-done" class="receive-done hidden">
+            <div class="done-icon">✓</div>
+            <h3>تم الاستلام!</h3>
+            <div id="received-content" style="width: 100%;"></div>
+            <button class="btn-primary" id="receive-again-btn">رجوع للرئيسية</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Send Screen -->
+      <section id="screen-send" class="screen">
+        <div class="screen-content">
+          <button class="back-btn" id="back-from-send" aria-label="رجوع">✕</button>
+          <div id="send-header" class="screen-header">
+            <h2>إرسال محتوى</h2>
+            <p>أدخل رمز المستقبِل للمتابعة</p>
+          </div>
+          <div id="send-connect">
+            <div class="code-display" id="code-inputs" style="margin-bottom: 1.5rem;">
+              <input class="text-input" id="ci0" maxlength="1" inputmode="numeric">
+              <input class="text-input" id="ci1" maxlength="1" inputmode="numeric">
+              <input class="text-input" id="ci2" maxlength="1" inputmode="numeric">
+              <input class="text-input" id="ci3" maxlength="1" inputmode="numeric">
+              <input class="text-input" id="ci4" maxlength="1" inputmode="numeric">
+            </div>
+            <p id="code-error" class="hidden" style="color: var(--c-red); text-align: center; margin-bottom: 1rem;">
+              الرمز غير صحيح</p>
+            <button class="btn-primary" id="connect-btn">اتصال بالجهاز</button>
+          </div>
+          <div id="send-content" class="hidden">
+            <div class="content-tabs"><button class="ctab-btn active" id="ctab-file">ملف</button><button
+                class="ctab-btn" id="ctab-link">نص / رابط</button></div>
+            <div id="file-panel">
+              <div class="drop-zone" id="drop-zone">
+                <input type="file" id="file-input" hidden multiple>
+                <div class="drop-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+                  </svg>
+                </div>
+                <p>اسحب الملفات هنا أو اضغط للاختيار</p>
+                <button class="btn-outline" id="browse-btn" style="width: auto; padding: 0.5rem 1rem;">اختر</button>
+              </div>
+              <div id="file-preview" class="hidden" style="margin-top: 1rem;">
+                <div id="file-list-container"></div><button class="btn-outline" id="remove-file"
+                  style="margin-top: 0.5rem; color: var(--c-red);">إلغاء الكل</button>
+              </div>
+            </div>
+            <div id="link-panel" class="hidden"><textarea id="link-input" class="link-input" rows="4"
+                placeholder="ألصق الرابط أو النص هنا..."></textarea></div>
+            <div id="upload-progress" class="hidden" style="margin-top: 1rem;">
+              <div class="progress-bar-wrap">
+                <div class="progress-bar" id="progress-bar"></div>
+              </div>
+              <p id="progress-text" style="text-align: center; font-size: 0.8rem; margin-top: 4px;">0%</p>
+            </div>
+            <button class="btn-primary" id="send-now-btn" style="margin-top: 1.5rem;">إرسال الآن</button>
+          </div>
+          <div id="send-done" class="send-done-content hidden">
+            <div class="done-icon">✓</div>
+            <h3>تم الإرسال!</h3>
+            <p>تم استلام المحتوى بنجاح</p><button class="btn-primary" id="send-again-btn">إرسال المزيد</button><button
+              class="btn-outline" id="end-session-btn" style="margin-top: 0.5rem;">إنهاء الجلسة</button>
+          </div>
+        </div>
+      </section>
+    </div>
 
     <div id="toast" class="toast"></div>
   </div>
