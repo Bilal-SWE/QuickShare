@@ -26,19 +26,11 @@ const SESSION_TTL = 10 * 60;
 // DOM Utilities
 // ──────────────────────────────────────────────
 const $ = id => document.getElementById(id);
-const screens = {
-  receive: $('screen-receive'),
-  send: $('screen-send')
-};
+const screens = { home: $('screen-home'), receive: $('screen-receive'), send: $('screen-send') };
 
 function navigateTo(screenId) {
   Object.values(screens).forEach(s => s.classList.remove('active'));
-  if (screenId === 'home') {
-    document.body.style.overflow = 'auto'; // Re-enable scrolling on LP
-  } else {
-    screens[screenId].classList.add('active');
-    document.body.style.overflow = 'hidden'; // Lock scroll for modal
-  }
+  screens[screenId].classList.add('active');
 }
 
 function showToast(msg, duration = 3000) {
