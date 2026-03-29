@@ -155,14 +155,24 @@ async function startReceiveSession(receiverName) {
       if (el) el.textContent = ch;
     });
 
-    // Create session in Supabase with receiver name
+    // Create session in Supabase - handle missing columns gracefully
     const expiresAt = new Date(Date.now() + SESSION_TTL * 1000).toISOString();
-    const { error: insertError } = await supabase.from('sessions').insert({
+    const sessionData = {
       code,
       status: 'waiting',
       expires_at: expiresAt,
       receiver_name: receiverName || 'مستقبل مجهول'
-    });
+    };
+
+    let { error: insertError } = await supabase.from('sessions').insert(sessionData);
+
+    // If failed, try again without receiver_name (in case column doesn't exist)
+    if (insertError) {
+      console.warn('Initial insert failed, retrying without receiver_name...', insertError);
+      const fallbackData = { code, status: 'waiting', expires_at: expiresAt };
+      const { error: retryError } = await supabase.from('sessions').insert(fallbackData);
+      insertError = retryError;
+    }
 
     if (insertError) throw insertError;
 
@@ -361,10 +371,23 @@ async function connectToSession(code) {
 
     // Mark session as connected and send sender's name
     const senderName = prompt('أدخل اسمك ليظهر للمستقبل:') || 'مرسل مجهول';
-    await supabase.from('sessions').update({
+    let { error: updateError } = await supabase.from('sessions').update({
       status: 'connected',
       sender_name: senderName
     }).eq('code', code);
+
+    // Fallback if sender_name column is missing
+    if (updateError) {
+      console.warn('Update with sender_name failed, retrying...', updateError);
+      const { error: retryError } = await supabase.from('sessions').update({ status: 'connected' }).eq('code', code);
+      updateError = retryError;
+    }
+
+    if (updateError) {
+      showCodeError('رمز غير صحيح أو منتهي الصلاحية');
+      resetConnectBtn();
+      return false;
+    }
 
     connectedCode = code;
     resetConnectBtn();
