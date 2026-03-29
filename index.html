@@ -44,9 +44,17 @@
         <span class="nav-logo-text">Q-Share</span>
       </div>
       <div class="nav-links">
-        <a href="#features">المميزات</a>
-        <a href="#how-it-works">كيف يعمل؟</a>
-        <button class="nav-btn" id="nav-btn-start">ابدأ الآن</button>
+        <a href="#features" data-i18n="nav_features">المميزات</a>
+        <a href="#how-it-works" data-i18n="nav_how">كيف يعمل؟</a>
+        <div class="nav-actions">
+          <button class="lang-toggle" id="lang-toggle-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+            </svg>
+            <span id="lang-label">EN</span>
+          </button>
+          <button class="nav-btn" id="nav-btn-start" data-i18n="nav_start">ابدأ الآن</button>
+        </div>
       </div>
     </div>
   </nav>
@@ -55,14 +63,15 @@
     <!-- Hero Section -->
     <section class="hero-section">
       <div class="hero-content">
-        <div class="badge-new">تحديث: نقل ملفات متعددة متوفر الآن! ✨</div>
-        <h1 class="hero-title">نقل الملفات والروابط <br><span class="gradient-text">بلمحة بصر (Q-Share)</span></h1>
-        <p class="hero-description">أسرع وسيلة لنقل ملفاتك بين هاتفك وحواسبك دون الحاجة لحساب أو تسجيل دخول. آمن، مشفر،
-          ومجاني تماماً.</p>
+        <div class="badge-new" data-i18n="hero_badge">تحديث: نقل ملفات متعددة متوفر الآن! ✨</div>
+        <h1 class="hero-title" data-i18n="hero_title">نقل الملفات والروابط <br><span class="gradient-text">بلمحة بصر
+            (Q-Share)</span></h1>
+        <p class="hero-description" data-i18n="hero_desc">أسرع وسيلة لنقل ملفاتك بين هاتفك وحواسبك دون الحاجة لحساب أو
+          تسجيل دخول. آمن، مشفر، ومجاني تماماً.</p>
 
         <div class="hero-actions">
-          <a href="#app-container" class="btn-hero-primary" id="hero-send">إرسال ملف</a>
-          <a href="#app-container" class="btn-hero-outline" id="hero-receive">استقبال</a>
+          <a href="#app-container" class="btn-hero-primary" id="hero-send" data-i18n="hero_btn_send">إرسال ملف</a>
+          <a href="#app-container" class="btn-hero-outline" id="hero-receive" data-i18n="hero_btn_receive">استقبال</a>
         </div>
       </div>
 
@@ -102,30 +111,31 @@
     <!-- Features Section -->
     <section id="features" class="features-section">
       <div class="section-header">
-        <h2 class="section-title">لماذا تختار <span class="gradient-text">Q-Share</span>؟</h2>
+        <h2 class="section-title" data-i18n="features_title">لماذا تختار <span class="gradient-text">Q-Share</span>؟
+        </h2>
       </div>
       <div class="features-grid">
         <div class="feature-card">
           <div class="feature-icon i-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg></div>
-          <h3>خصوصية تامة</h3>
-          <p>يتم حذف جميع الملفات والروابط تلقائياً بعد مرور 10 دقائق من الاستخدام.</p>
+          <h3 data-i18n="feat_1_title">خصوصية تامة</h3>
+          <p data-i18n="feat_1_desc">يتم حذف جميع الملفات والروابط تلقائياً بعد مرور 10 دقائق من الاستخدام.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon i-2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
             </svg></div>
-          <h3>سرعة فائقة</h3>
-          <p>تقنيات متطورة تضمن لك وصول الملفات في أجزاء من الثانية فور الضغط على إرسال.</p>
+          <h3 data-i18n="feat_2_title">سرعة فائقة</h3>
+          <p data-i18n="feat_2_desc">تقنيات متطورة تضمن لك وصول الملفات في أجزاء من الثانية فور الضغط على إرسال.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon i-3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
               <path d="M13.73 21a2 2 0 01-3.46 0" />
             </svg></div>
-          <h3>لا حاجة للتسجيل</h3>
-          <p>ابدأ النقل فوراً دون بريد إلكتروني أو كلمات مرور. فقط الرمز ولقد بدأت!</p>
+          <h3 data-i18n="feat_3_title">لا حاجة للتسجيل</h3>
+          <p data-i18n="feat_3_desc">ابدأ النقل فوراً دون بريد إلكتروني أو كلمات مرور. فقط الرمز ولقد بدأت!</p>
         </div>
       </div>
     </section>
@@ -142,8 +152,8 @@
                   <path d="M22 2L11 13" />
                   <path d="M22 2L15 22 11 13 2 9l20-7z" />
                 </svg></div>
-              <h3>إرسال</h3>
-              <p>رفع ملفات أو كتابة روابط</p>
+              <h3 data-i18n="app_send">إرسال</h3>
+              <p data-i18n="app_send_desc">رفع ملفات أو كتابة روابط</p>
             </button>
             <button id="btn-receive" class="mode-card receive">
               <div class="mode-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -151,28 +161,28 @@
                   <path d="M7 12l5 5 5-5" />
                   <path d="M4 20h16" />
                 </svg></div>
-              <h3>استقبال</h3>
-              <p>الحصول على رمز الاستقبال</p>
+              <h3 data-i18n="app_receive">استقبال</h3>
+              <p data-i18n="app_receive_desc">الحصول على رمز الاستقبال</p>
             </button>
           </div>
         </div>
 
         <!-- Receive Screen -->
         <section id="screen-receive" class="screen">
-          <button class="back-btn" id="back-from-receive" aria-label="رجوع">
+          <button class="back-btn" id="back-from-receive" aria-label="back">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M19 12H5M12 5l-7 7 7 7" />
             </svg>
           </button>
           <div class="app-content-inner">
             <div class="inner-header">
-              <h2>جاهز للاستقبال</h2>
-              <p>شارك الرمز أو الباركود مع المُرسِل</p>
+              <h2 data-i18n="rec_title">جاهز للاستقبال</h2>
+              <p data-i18n="rec_desc">شارك الرمز أو الباركود مع المُرسِل</p>
             </div>
 
             <div id="receive-loading" class="loading-state">
               <div class="spinner"></div>
-              <span>جاري إعداد الجلسة...</span>
+              <span data-i18n="rec_loading">جاري إعداد الجلسة...</span>
             </div>
 
             <div id="receive-ready" class="receive-parts hidden">
@@ -189,11 +199,11 @@
                   <span class="digit" id="d4">-</span>
                   <span class="digit" id="d5">-</span>
                 </div>
-                <button class="btn-copy" id="copy-code-btn">نسخ الرمز</button>
+                <button class="btn-copy" id="copy-code-btn" data-i18n="rec_copy">نسخ الرمز</button>
               </div>
               <div class="status-indicator">
                 <div class="pulse-ring"></div>
-                <span id="receive-status-text">بانتظار المُرسِل...</span>
+                <span id="receive-status-text" data-i18n="rec_status_wait">بانتظار المُرسِل...</span>
               </div>
               <div class="timer-display">
                 <svg class="timer-svg" viewBox="0 0 36 36">
@@ -208,16 +218,16 @@
               <div class="success-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
                   <polyline points="20 6 9 17 4 12" />
                 </svg></div>
-              <h3>وصلت الملفات!</h3>
+              <h3 data-i18n="rec_done_title">وصلت الملفات!</h3>
               <div id="received-content" class="download-list"></div>
-              <button class="btn-primary" id="receive-again-btn">استقبال ملف جديد</button>
+              <button class="btn-primary" id="receive-again-btn" data-i18n="rec_again">استقبال ملف جديد</button>
             </div>
           </div>
         </section>
 
         <!-- Send Screen -->
         <section id="screen-send" class="screen">
-          <button class="back-btn" id="back-from-send" aria-label="رجوع">
+          <button class="back-btn" id="back-from-send" aria-label="back">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M19 12H5M12 5l-7 7 7 7" />
             </svg>
@@ -225,8 +235,8 @@
           <div class="app-content-inner">
             <div id="send-connect" class="send-step-box">
               <div class="inner-header">
-                <h2>الاتصال بالجهاز</h2>
-                <p>أدخل الرمز المكون من 6 أرقام</p>
+                <h2 data-i18n="send_conn_title">الاتصال بالجهاز</h2>
+                <p data-i18n="send_conn_desc">أدخل الرمز المكون من 6 أرقام</p>
               </div>
               <div class="otp-inputs" id="code-inputs">
                 <input class="otp-field" id="ci0" maxlength="1" inputmode="numeric">
@@ -237,18 +247,18 @@
                 <input class="otp-field" id="ci4" maxlength="1" inputmode="numeric">
                 <input class="otp-field" id="ci5" maxlength="1" inputmode="numeric">
               </div>
-              <p id="code-error" class="error-msg hidden">رمز غير صحيح</p>
-              <button class="btn-primary" id="connect-btn">اتصال</button>
+              <p id="code-error" class="error-msg hidden" data-i18n="send_error_code">رمز غير صحيح</p>
+              <button class="btn-primary" id="connect-btn" data-i18n="send_conn_btn">اتصال</button>
             </div>
 
             <div id="send-content" class="send-step-box hidden">
               <div class="conn-status">
                 <span class="status-dot green"></span>
-                <span>متصل بالمستقبِل</span>
+                <span data-i18n="send_status_connected">متصل بالمستقبِل</span>
               </div>
               <div class="tabs">
-                <button class="tab-trigger active" id="ctab-file">ملفات</button>
-                <button class="tab-trigger" id="ctab-link">روابط / نص</button>
+                <button class="tab-trigger active" id="ctab-file" data-i18n="tab_files">ملفات</button>
+                <button class="tab-trigger" id="ctab-link" data-i18n="tab_links">روابط / نص</button>
               </div>
 
               <div id="file-panel" class="tab-content active">
@@ -260,17 +270,17 @@
                       <polyline points="17 8 12 3 7 8" />
                       <line x1="12" y1="3" x2="12" y2="15" />
                     </svg></div>
-                  <p>اسحب الملفات هنا أو اضغط للاختيار</p>
-                  <span class="limit-text">الحد الأقصى 40 ميغا لكل ملف</span>
+                  <p data-i18n="drop_text">اسحب الملفات هنا أو اضغط للاختيار</p>
+                  <span class="limit-text" data-i18n="limit_text">الحد الأقصى 40 ميغا لكل ملف</span>
                 </div>
                 <div id="file-preview" class="file-list-preview hidden">
                   <div id="file-list-container"></div>
-                  <button class="btn-text" id="remove-file">إعادة التعيين</button>
+                  <button class="btn-text" id="remove-file" data-i18n="reset_btn">إعادة التعيين</button>
                 </div>
               </div>
 
               <div id="link-panel" class="tab-content">
-                <textarea id="link-input" class="modern-textarea"
+                <textarea id="link-input" class="modern-textarea" data-i18n-ph="textarea_placeholder"
                   placeholder="اكتب نصاً أو الصق رابطاً هنا..."></textarea>
               </div>
 
@@ -281,17 +291,17 @@
                 <span id="progress-text">0%</span>
               </div>
 
-              <button class="btn-primary" id="send-now-btn">إرسال الآن</button>
+              <button class="btn-primary" id="send-now-btn" data-i18n="send_btn">إرسال الآن</button>
             </div>
 
             <div id="send-done" class="send-step-box hidden">
               <div class="success-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
                   <polyline points="20 6 9 17 4 12" />
                 </svg></div>
-              <h3>تم الإرسال!</h3>
-              <p>استلم المستقبِل المحتوى بنجاح</p>
-              <button class="btn-primary" id="send-again-btn">إرسال المزيد</button>
-              <button class="btn-outline" id="end-session-btn">إنهاء الجلسة</button>
+              <h3 data-i18n="send_done_title">تم الإرسال!</h3>
+              <p data-i18n="send_done_desc">استلم المستقبِل المحتوى بنجاح</p>
+              <button class="btn-primary" id="send-again-btn" data-i18n="send_again">إرسال المزيد</button>
+              <button class="btn-outline" id="end-session-btn" data-i18n="end_session">إنهاء الجلسة</button>
             </div>
           </div>
         </section>
@@ -301,23 +311,23 @@
     <!-- How it works -->
     <section id="how-it-works" class="how-section">
       <div class="section-header">
-        <h2 class="section-title">كيفية <span class="gradient-text">الاستخدام</span></h2>
+        <h2 class="section-title" data-i18n="how_title">كيفية <span class="gradient-text">الاستخدام</span></h2>
       </div>
       <div class="steps-container">
         <div class="step-item">
           <div class="step-num">01</div>
-          <h4>افتح الموقع على الجهازين</h4>
-          <p>تأكد من فتح Q-Share على كل من الجهاز المرسل والمستقبل.</p>
+          <h4 data-i18n="step_1_title">افتح الموقع على الجهازين</h4>
+          <p data-i18n="step_1_desc">تأكد من فتح Q-Share على كل من الجهاز المرسل والمستقبل.</p>
         </div>
         <div class="step-item">
           <div class="step-num">02</div>
-          <h4>انسخ الرمز</h4>
-          <p>اضغط "استقبال" على أحد الأجهزة وخذ الرمز المكون من 6 أرقام.</p>
+          <h4 data-i18n="step_2_title">انسخ الرمز</h4>
+          <p data-i18n="step_2_desc">اضغط "استقبال" على أحد الأجهزة وخذ الرمز المكون من 6 أرقام.</p>
         </div>
         <div class="step-item">
           <div class="step-num">03</div>
-          <h4>ابدأ النقل</h4>
-          <p>أدخل الرمز في الجهاز الآخر، اختر ملفاتك، واضغط إرسال!</p>
+          <h4 data-i18n="step_3_title">ابدأ النقل</h4>
+          <p data-i18n="step_3_desc">أدخل الرمز في الجهاز الآخر، اختر ملفاتك، واضغط إرسال!</p>
         </div>
       </div>
     </section>
@@ -327,14 +337,14 @@
     <div class="footer-container">
       <div class="footer-brand">
         <span class="nav-logo-text">Q-Share</span>
-        <p>نقل فوري وبسيط للملفات والروابط.</p>
+        <p data-i18n="footer_desc">نقل فوري وبسيط للملفات والروابط.</p>
       </div>
       <div class="footer-links">
         <a href="https://github.com" target="_blank">GitHub</a>
-        <a href="#">الخصوصية</a>
-        <a href="#">تواصل معنا</a>
+        <a href="#" data-i18n="footer_privacy">الخصوصية</a>
+        <a href="#" data-i18n="footer_contact">تواصل معنا</a>
       </div>
-      <div class="footer-copy">© 2024 Q-Share. جميع الحقوق محفوظة.</div>
+      <div class="footer-copy" data-i18n="footer_copy">© 2024 Q-Share. جميع الحقوق محفوظة.</div>
     </div>
   </footer>
 

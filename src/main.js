@@ -470,6 +470,172 @@ function resetSendScreen() {
 }
 
 // ──────────────────────────────────────────────
+// Internationalization (i18n)
+// ──────────────────────────────────────────────
+
+const translations = {
+  ar: {
+    nav_features: "المميزات",
+    nav_how: "كيف يعمل؟",
+    nav_start: "ابدأ الآن",
+    hero_badge: "تحديث: نقل ملفات متعددة متوفر الآن! ✨",
+    hero_title: 'نقل الملفات والروابط <br><span class="gradient-text">بلمحة بصر (Q-Share)</span>',
+    hero_desc: "أسرع وسيلة لنقل ملفاتك بين هاتفك وحواسبك دون الحاجة لحساب أو تسجيل دخول. آمن، مشفر، ومجاني تماماً.",
+    hero_btn_send: "إرسال ملف",
+    hero_btn_receive: "استقبال",
+    features_title: 'لماذا تختار <span class="gradient-text">Q-Share</span>؟',
+    feat_1_title: "خصوصية تامة",
+    feat_1_desc: "يتم حذف جميع الملفات والروابط تلقائياً بعد مرور 10 دقائق من الاستخدام.",
+    feat_2_title: "سرعة فائقة",
+    feat_2_desc: "تقنيات متطورة تضمن لك وصول الملفات في أجزاء من الثانية فور الضغط على إرسال.",
+    feat_3_title: "لا حاجة للتسجيل",
+    feat_3_desc: "ابدأ النقل فوراً دون بريد إلكتروني أو كلمات مرور. فقط الرمز ولقد بدأت!",
+    app_send: "إرسال",
+    app_send_desc: "رفع ملفات أو كتابة روابط",
+    app_receive: "استقبال",
+    app_receive_desc: "الحصول على رمز الاستقبال",
+    rec_title: "جاهز للاستقبال",
+    rec_desc: "شارك الرمز أو الباركود مع المُرسِل",
+    rec_loading: "جاري إعداد الجلسة...",
+    rec_copy: "نسخ الرمز",
+    rec_status_wait: "بانتظار المُرسِل...",
+    rec_status_connected: "✅ تم الاتصال! في انتظار المحتوى…",
+    rec_done_title: "وصلت الملفات!",
+    rec_again: "استقبال ملف جديد",
+    send_conn_title: "الاتصال بالجهاز",
+    send_conn_desc: "أدخل الرمز المكون من 6 أرقام",
+    send_conn_btn: "اتصال",
+    send_error_code: "رمز غير صحيح",
+    send_status_connected: "متصل بالمستقبِل",
+    tab_files: "ملفات",
+    tab_links: "روابط / نص",
+    drop_text: "اسحب الملفات هنا أو اضغط للاختيار",
+    limit_text: "الحد الأقصى 40 ميغا لكل ملف",
+    reset_btn: "إعادة التعيين",
+    textarea_placeholder: "اكتب نصاً أو الصق رابطاً هنا...",
+    send_btn: "إرسال الآن",
+    send_done_title: "تم الإرسال!",
+    send_done_desc: "استلم المستقبِل المحتوى بنجاح",
+    send_again: "إرسال المزيد",
+    end_session: "إنهاء الجلسة",
+    how_title: 'كيفية <span class="gradient-text">الاستخدام</span>',
+    step_1_title: "افتح الموقع على الجهازين",
+    step_1_desc: "تأكد من فتح Q-Share على كل من الجهاز المرسل والمستقبل.",
+    step_2_title: "انسخ الرمز",
+    step_2_desc: "اضغط 'استقبال' على أحد الأجهزة وخذ الرمز المكون من 6 أرقام.",
+    step_3_title: "ابدأ النقل",
+    step_3_desc: "أدخل الرمز في الجهاز الآخر، اختر ملفاتك، واضغط إرسال!",
+    footer_desc: "نقل فوري وبسيط للملفات والروابط.",
+    footer_privacy: "الخصوصية",
+    footer_contact: "تواصل معنا",
+    footer_copy: "© 2024 Q-Share. جميع الحقوق محفوظة.",
+    toast_copied: "تم نسخ الرمز ✓",
+    toast_copy_fail: "تعذر النسخ",
+    toast_expire: "انتهت صلاحية الجلسة",
+    toast_no_files: "يرجى اختيار ملف",
+    toast_no_text: "يرجى إدخال نص أو رابط",
+    toast_invalid: "الرمز غير صالح أو منتهي الصلاحية"
+  },
+  en: {
+    nav_features: "Features",
+    nav_how: "How it works?",
+    nav_start: "Start Now",
+    hero_badge: "Update: Multi-file transfer available! ✨",
+    hero_title: 'Transfer Files & Links <br><span class="gradient-text">in a Flash (Q-Share)</span>',
+    hero_desc: "The fastest way to move files between your phone and computers with no account needed. Secure, encrypted, and completely free.",
+    hero_btn_send: "Send File",
+    hero_btn_receive: "Receive",
+    features_title: 'Why choose <span class="gradient-text">Q-Share</span>?',
+    feat_1_title: "Full Privacy",
+    feat_1_desc: "All files and links are auto-deleted 10 minutes after use.",
+    feat_2_title: "High Speed",
+    feat_2_desc: "Advanced tech ensures files arrive in milliseconds after clicking send.",
+    feat_3_title: "No Account",
+    feat_3_desc: "Start transferring immediately without emails or passwords. Just use the code!",
+    app_send: "Send",
+    app_send_desc: "Upload files or write links",
+    app_receive: "Receive",
+    app_receive_desc: "Get reception code",
+    rec_title: "Ready to Receive",
+    rec_desc: "Share the code or QR with the sender",
+    rec_loading: "Setting up session...",
+    rec_copy: "Copy Code",
+    rec_status_wait: "Waiting for sender...",
+    rec_status_connected: "✅ Connected! Waiting for content...",
+    rec_done_title: "Files Received!",
+    rec_again: "Receive New File",
+    send_conn_title: "Connect Device",
+    send_conn_desc: "Enter the 6-digit code",
+    send_conn_btn: "Connect",
+    send_error_code: "Invalid Code",
+    send_status_connected: "Connected to Receiver",
+    tab_files: "Files",
+    tab_links: "Links / Text",
+    drop_text: "Drop files here or click to choose",
+    limit_text: "Max 40MB per file",
+    reset_btn: "Reset",
+    textarea_placeholder: "Write text or paste link here...",
+    send_btn: "Send Now",
+    send_done_title: "Sent Successfully!",
+    send_done_desc: "Receiver got the content successfully",
+    send_again: "Send More",
+    end_session: "End Session",
+    how_title: 'How it <span class="gradient-text">Works</span>',
+    step_1_title: "Open on both devices",
+    step_1_desc: "Ensure Q-Share is open on sender and receiver devices.",
+    step_2_title: "Copy the code",
+    step_2_desc: "Click 'Receive' on one device and take the 6-digit code.",
+    step_3_title: "Start transfer",
+    step_3_desc: "Enter code on other device, pick files, and hit send!",
+    footer_desc: "Simple, instant file and link transfer.",
+    footer_privacy: "Privacy",
+    footer_contact: "Contact",
+    footer_copy: "© 2024 Q-Share. All rights reserved.",
+    toast_copied: "Code copied ✓",
+    toast_copy_fail: "Copy failed",
+    toast_expire: "Session expired",
+    toast_no_files: "Please choose a file",
+    toast_no_text: "Please enter text or link",
+    toast_invalid: "Invalid or expired code"
+  }
+};
+
+let currentLang = localStorage.getItem('qshare_lang') || 'ar';
+
+function updateLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem('qshare_lang', lang);
+
+  const dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.documentElement.setAttribute('dir', dir);
+  document.documentElement.setAttribute('lang', lang);
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (translations[lang][key]) {
+      el.innerHTML = translations[lang][key];
+    }
+  });
+
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const key = el.getAttribute('data-i18n-ph');
+    if (translations[lang][key]) {
+      el.placeholder = translations[lang][key];
+    }
+  });
+
+  // Update toggle button label
+  $('lang-label').textContent = lang === 'ar' ? 'EN' : 'العربية';
+
+  // Update some hardcoded logical bits
+  if (lang === 'en') {
+    document.body.classList.add('en-mode');
+  } else {
+    document.body.classList.remove('en-mode');
+  }
+}
+
+// ──────────────────────────────────────────────
 // Event Listeners
 // ──────────────────────────────────────────────
 
@@ -477,6 +643,12 @@ function resetSendScreen() {
 function scrollToApp() {
   document.getElementById('app-container').scrollIntoView({ behavior: 'smooth' });
 }
+
+// Lang Toggle
+$('lang-toggle-btn').addEventListener('click', () => {
+  const next = currentLang === 'ar' ? 'en' : 'ar';
+  updateLanguage(next);
+});
 
 // Nav and Hero Actions
 $('nav-btn-start')?.addEventListener('click', scrollToApp);
@@ -521,8 +693,8 @@ $('back-from-send').addEventListener('click', () => {
 $('copy-code-btn').addEventListener('click', () => {
   if (currentSessionCode) {
     navigator.clipboard.writeText(currentSessionCode)
-      .then(() => showToast('تم نسخ الرمز ✓'))
-      .catch(() => showToast('تعذر النسخ'));
+      .then(() => showToast(translations[currentLang].toast_copied))
+      .catch(() => showToast(translations[currentLang].toast_copy_fail));
   }
 });
 
@@ -558,7 +730,9 @@ charInputs.forEach((input, idx) => {
   input.addEventListener('input', () => {
     const v = input.value.replace(/\D/g, '');
     input.value = v.slice(-1);
-    if (v && idx < 5) charInputs[idx + 1].focus();
+    if (v) {
+      if (idx < 5) charInputs[idx + 1].focus();
+    }
   });
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Backspace' && !input.value && idx > 0) charInputs[idx - 1].focus();
@@ -608,7 +782,7 @@ function handleFileSelect(files) {
   const maxBytes = 40 * 1024 * 1024;
   Array.from(files).forEach(file => {
     if (file.size > maxBytes) {
-      showToast(`الملف ${file.name} يتجاوز الحد الأقصى (40 ميغابايت)`);
+      showToast(currentLang === 'ar' ? `الملف ${file.name} كبير جداً` : `File ${file.name} is too large`);
     } else {
       selectedFiles.push(file);
     }
@@ -633,7 +807,7 @@ function renderFileList() {
                       <polyline points="14 2 14 8 20 8" stroke-width="2" stroke-linejoin="round" />
                     </svg>
                 </div>
-                <div style="flex: 1; overflow: hidden; text-align: right;">
+                <div style="flex: 1; overflow: hidden; text-align: start;">
                   <p class="file-name-text" style="font-size: 0.95rem; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${file.name}</p>
                   <p class="file-size-text" style="font-size: 0.8rem; margin: 0; color: rgba(255,255,255,0.6);">${formatBytes(file.size)}</p>
                 </div>
@@ -664,9 +838,13 @@ if (autoCode && /^\d{6}$/.test(autoCode)) {
       $('send-connect').classList.add('hidden');
       $('send-content').classList.remove('hidden');
     } else {
-      showToast('الرمز غير صالح أو منتهي الصلاحية');
+      showToast(translations[currentLang].toast_invalid);
     }
     window.history.replaceState({}, '', window.location.pathname);
   }, 500);
 }
+
+// Init Lang
+updateLanguage(currentLang);
+
 
