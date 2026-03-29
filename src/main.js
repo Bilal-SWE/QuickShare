@@ -223,7 +223,9 @@ async function startReceiveSession(receiverName) {
           const content = $('received-content');
           let htmlItem = '';
           if (data.type === 'link') {
-            const isUrl = data.url.startsWith('http://') || data.url.startsWith('https://');
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            const matches = data.url.match(urlRegex);
+            const firstUrl = matches ? matches[0] : null;
 
             htmlItem = `
               <div class="received-link-wrap" style="padding: 15px; background: white; border: 1px solid var(--c-border); border-radius: 16px;">
@@ -232,8 +234,8 @@ async function startReceiveSession(receiverName) {
                    <div style="word-break: break-all; font-size: 0.95rem;">${data.url}</div>
                 </div>
                 <div class="action-buttons">
-                  <button class="btn-preview" onclick="navigator.clipboard.writeText('${data.url}').then(() => showToast('تم النسخ ✓'))">نسخ النص</button>
-                  ${isUrl ? `<a href="${data.url}" target="_blank" class="btn-download" style="font-size: 0.85rem;">فتح الرابط</a>` : ''}
+                  <button class="btn-preview" onclick="navigator.clipboard.writeText('${data.url}').then(() => showToast('تم النسخ ✓'))">نسخ المحتوى</button>
+                  ${firstUrl ? `<a href="${firstUrl}" target="_blank" class="btn-download" style="font-size: 0.85rem;">فتح الرابط</a>` : ''}
                 </div>
               </div>`;
           } else if (data.type === 'file') {
@@ -687,9 +689,14 @@ $('ctab-link').addEventListener('click', () => {
 });
 
 // File drop zone
-$('browse-btn').addEventListener('click', () => $('file-input').click());
+$('browse-btn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  $('file-input').click();
+});
 const dropZone = $('drop-zone');
-dropZone.addEventListener('click', () => $('file-input').click());
+dropZone.addEventListener('click', () => {
+  $('file-input').click();
+});
 dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
 dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
 dropZone.addEventListener('drop', (e) => {
