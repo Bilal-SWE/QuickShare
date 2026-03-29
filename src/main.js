@@ -317,3 +317,39 @@ if (autoCode && /^\d{5}$/.test(autoCode)) {
     window.history.replaceState({}, '', window.location.pathname);
   }, 500);
 }
+// ──────────────────────────────────────────────
+// Statistics
+// ──────────────────────────────────────────────
+async function loadStats() {
+  try {
+    // Total Visitors (using a reliable counter API)
+    // We'll use a namespace based on the hostname for accuracy
+    const ns = window.location.hostname.replace(/\./g, '_') || 'local_qshare';
+    const res = await fetch(`https://api.counterapi.dev/v1/${ns}/visits/up`);
+    const data = await res.json();
+    if (data.count) $('visitor-count').textContent = data.count.toLocaleString();
+  } catch (e) {
+    console.warn('Visitor count failed:', e);
+    $('visitor-count').textContent = '---';
+  }
+
+  try {
+    // Active Sessions (real-time from Supabase)
+    if (supabase) {
+      const { count, error } = await supabase
+        .from('sessions')
+        .select('*', { count: 'exact', head: true })
+        .or(`status.eq.waiting,status.eq.connected`);
+
+      if (!error) $('active-sessions').textContent = count || 0;
+    }
+  } catch (e) {
+    console.error('Active sessions fetch failed:', e);
+    $('active-sessions').textContent = '0';
+  }
+}
+
+// Initial Load
+loadStats();
+// Periodic Refresh for active sessions
+setInterval(loadStats, 30000); // 30s
