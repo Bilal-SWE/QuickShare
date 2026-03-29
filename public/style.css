@@ -7,23 +7,24 @@
 
 :root {
   --c-white: #ffffff;
-  --c-bg: #fffcf9;
-  /* Very light creamy/orange background */
-  --c-primary: #fb923c;
-  /* Lighter Orange */
-  --c-primary-hover: #f97316;
-  --c-primary-light: #fff7ed;
-  --c-text: #1a1c24;
-  --c-text-muted: #6b7280;
-  --c-border: #f3f4f6;
-  --c-card: #ffffff;
+  --c-bg: #0f172a;
+  /* Deep Midnight */
+  --c-primary: #38bdf8;
+  /* Sky Blue */
+  --c-primary-hover: #7dd3fc;
+  --c-primary-light: rgba(56, 189, 248, 0.1);
+  --c-text: #f8fafc;
+  --c-text-muted: #94a3b8;
+  --c-border: #334155;
+  --c-card: #1e293b;
 
-  --c-red: #ef4444;
-  --c-green: #22c55e;
-  --c-teal: #0d9488;
+  --c-red: #f43f5e;
+  --c-green: #10b981;
+  --c-teal: #14b8a6;
 
-  --shadow: 0 4px 20px -5px rgba(249, 115, 22, 0.1);
-  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --glass: rgba(30, 41, 59, 0.7);
 }
 
 * {
@@ -36,12 +37,16 @@
 body {
   font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
   background-color: var(--c-bg);
+  background-image:
+    radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(168, 85, 247, 0.1) 0px, transparent 50%);
   color: var(--c-text);
   line-height: 1.6;
   direction: rtl;
   height: 100vh;
   overflow: hidden;
-  /* No scroll on desktop */
   display: flex;
   flex-direction: column;
 }
@@ -78,6 +83,8 @@ body {
 header {
   padding: 1.5rem 0;
   flex-shrink: 0;
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .nav {
@@ -96,12 +103,13 @@ header {
 .logo-icon {
   width: 44px;
   height: 44px;
-  background: var(--c-primary);
+  background: linear-gradient(135deg, var(--c-primary) 0%, #a855f7 100%);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
+  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
 }
 
 .logo-icon svg {
@@ -112,7 +120,10 @@ header {
 .logo-text {
   font-size: 2rem;
   font-weight: 800;
-  color: var(--c-primary);
+  background: linear-gradient(135deg, var(--c-primary) 0%, #a855f7 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* === Hidden Elements === */
@@ -133,6 +144,19 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .screen {
@@ -184,21 +208,19 @@ header {
 
 .card {
   flex: 1;
-  /* Equal width for both cards */
-  background: #fff;
-  border: 2px solid var(--c-border);
-  border-radius: 16px;
-  padding: 1.25rem 0.75rem;
-  /* Reduced padding for mobile density */
+  background: var(--c-card);
+  border: 1px solid var(--c-border);
+  border-radius: 20px;
+  padding: 1.5rem 0.75rem;
   text-align: center;
   cursor: pointer;
   transition: all var(--transition);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
   min-width: 0;
-  /* Important for flex-shrink */
+  box-shadow: var(--shadow);
 }
 
 .card:hover {
@@ -244,17 +266,19 @@ header {
 
 /* === SCREEN CONTENT === */
 .screen-content {
-  background: #fff;
-  border: 2px solid var(--c-border);
-  border-radius: 24px;
-  padding: 2rem;
+  background: var(--glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 32px;
+  padding: 2.5rem;
   width: 100%;
   max-width: 500px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   position: relative;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
 .screen-header {
@@ -277,10 +301,10 @@ header {
 .btn-primary {
   width: 100%;
   padding: 1rem;
-  background: var(--c-primary);
+  background: linear-gradient(135deg, var(--c-primary) 0%, #0ea5e9 100%);
   color: #fff;
   border: none;
-  border-radius: 14px;
+  border-radius: 16px;
   font-size: 1.05rem;
   font-weight: 700;
   cursor: pointer;
@@ -289,10 +313,12 @@ header {
   justify-content: center;
   gap: 0.75rem;
   transition: all var(--transition);
+  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--c-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(56, 189, 248, 0.4);
 }
 
 .btn-primary:active:not(:disabled) {
@@ -308,8 +334,8 @@ header {
   width: 100%;
   padding: 1rem;
   background: transparent;
-  border: 3px solid var(--c-border);
-  border-radius: 18px;
+  border: 1px solid var(--c-border);
+  border-radius: 16px;
   color: var(--c-text);
   font-size: 1rem;
   font-weight: 600;
@@ -359,9 +385,9 @@ header {
 .link-input {
   width: 100%;
   padding: 1rem;
-  background: #fff;
-  border: 2px solid var(--c-border);
-  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid var(--c-border);
+  border-radius: 16px;
   font-size: 1rem;
   font-family: inherit;
   color: var(--c-text);
@@ -373,7 +399,8 @@ header {
 .text-input:focus,
 .link-input:focus {
   border-color: var(--c-primary);
-  background: #fff;
+  background: rgba(15, 23, 42, 0.8);
+  box-shadow: 0 0 0 4px var(--c-primary-light);
 }
 
 /* === Code Box === */
@@ -388,11 +415,10 @@ header {
 
 .code-digit {
   flex: 0 0 clamp(36px, 12vw, 44px);
-  /* Fixed width for digits */
   height: clamp(48px, 15vw, 56px);
-  background: var(--c-primary-light);
-  border: 1px solid var(--c-primary);
-  border-radius: 10px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -453,14 +479,16 @@ header {
 }
 
 .drop-zone {
-  border: 3px dashed var(--c-border);
-  border-radius: 20px;
-  padding: 2.5rem 1rem;
+  border: 2px dashed var(--c-border);
+  border-radius: 24px;
+  padding: 3rem 1rem;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
+  background: rgba(15, 23, 42, 0.3);
+  transition: all var(--transition);
 }
 
 .drop-zone:hover {
@@ -582,7 +610,9 @@ header {
   bottom: 2rem;
   left: 50%;
   transform: translateX(-50%) translateY(100px);
-  background: var(--c-text);
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: #fff;
   padding: 0.75rem 2rem;
   border-radius: 50px;
@@ -590,6 +620,7 @@ header {
   transition: transform 0.3s ease, opacity 0.3s ease;
   opacity: 0;
   z-index: 10000;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
 
 .toast.show {
